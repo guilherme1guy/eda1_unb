@@ -56,3 +56,6 @@ dkms.conf
 *.project
 *.workspace
 .codelite/
+
+# Project
+[D]ata[S]et/
