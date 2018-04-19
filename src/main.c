@@ -13,6 +13,20 @@ void exit_with_error(char* error, int code){
     exit(code);
 }
 
+void free_data(int** ptr, int len){
+
+    if(debug)
+        puts("Freeing members of **ptr");
+    for(int i = 0; i < len; i++){
+        free(ptr[i]);
+    }
+
+    if(debug)
+        puts("Freeing **ptr");
+    
+    free(ptr);
+}
+
 int* read_txt_file(char* filename){
 // open a file from dataset indicaed by filename, read its contents
 // and returns a matrix with it
@@ -105,14 +119,14 @@ char* get_filename(char* path, int id, char* postfix){
     return filename;
 }
 
-void read_grass_files(){
+int** read_files(char* datatype){
     // read all grass files and return a pointer to an array with all of them
 
     char* path = calloc(255, sizeof(char));
     strcpy(path, dataset_path);
-    strcat(path, "/grass/grass_");
+    strcat(path, datatype);
 
-    int **grass = (int**) calloc(50, sizeof(int*));
+int **read_data = (int**) calloc(50, sizeof(int*));
 
     for(int i = 1; i <= 50; i++){
        
@@ -120,36 +134,21 @@ void read_grass_files(){
 
         int *mat = read_txt_file(filename);
 
-        grass[i] = mat;
+        read_data[i] = mat;
 
         free(filename);
     }
 
     if(debug)
-        printf("\nGRAS_PATH: %s\n", path);
+        printf("\nPATH: %s\n", path);
 
-    //   for(int i = 0; i < img_lin; i++){
-    //     for(int j = 0; j < img_col; j++){
-    //         printf(" %d ", *(mat+(i*img_col)+j));
-    //         if(j == img_col-1)
-    //             printf("\n");
-    //     }
 
     if(debug)
-        puts("Freeing path for grass");
+        puts("Freeing path string");
 
     free(path);
-    
-    if(debug)
-        puts("Freeing members of **grass");
-    for(int i = 0; i < 50; i++){
-        free(grass[i]);
-    }
 
-
-    if(debug)
-        puts("Freeing **grass");
-    free(grass);
+    return read_data;
 
 }
 
@@ -173,7 +172,11 @@ int main(int argc, char **argv)
         }
     }
 
-    read_grass_files();
+    int** grass = read_files("/grass/grass_");
+    int** asphalt = read_files("/asphalt/asphalt_");
+
+    free_data(grass, 50);
+    free_data(asphalt, 50);
 
     if(debug)
         puts("END");
