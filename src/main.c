@@ -123,10 +123,17 @@ int** read_files(char* datatype){
     // read all grass files and return a pointer to an array with all of them
 
     char* path = calloc(255, sizeof(char));
+
+    if(path == NULL)
+        exit_with_error("\nMemory allocation error", 1);
+
     strcpy(path, dataset_path);
     strcat(path, datatype);
 
-int **read_data = (int**) calloc(50, sizeof(int*));
+    int **read_data = (int**) calloc(50, sizeof(int*));
+
+    if(read_data == NULL)
+        exit_with_error("\nMemory allocation error", 1);
 
     for(int i = 1; i <= 50; i++){
        
