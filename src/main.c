@@ -52,6 +52,10 @@ int* read_txt_file(char* filename){
         }
 
         img_col += 1; //add last one
+
+        if(debug)
+            printf("IMG:\nLin: %d\nCol: %d\n", img_lin, img_col);
+
     }
 
     rewind(file);
@@ -108,7 +112,7 @@ void read_grass_files(){
     strcpy(path, dataset_path);
     strcat(path, "/grass/grass_");
 
-    int **grass = (int**) calloc(1, sizeof(int*));
+    int **grass = (int**) calloc(50, sizeof(int*));
 
     for(int i = 1; i <= 50; i++){
        
@@ -116,8 +120,8 @@ void read_grass_files(){
 
         int *mat = read_txt_file(filename);
 
-        grass = (int**) realloc(grass, i * sizeof(mat));
-    
+        grass[i] = mat;
+
         free(filename);
     }
 
@@ -131,11 +135,21 @@ void read_grass_files(){
     //             printf("\n");
     //     }
 
+    if(debug)
+        puts("Freeing path for grass");
+
     free(path);
     
+    if(debug)
+        puts("Freeing members of **grass");
     for(int i = 0; i < 50; i++){
         free(grass[i]);
     }
+
+
+    if(debug)
+        puts("Freeing **grass");
+    free(grass);
 
 }
 
@@ -153,12 +167,16 @@ int main(int argc, char **argv)
         char *c = argv[2];
         debug = (int) strtol(c, NULL, 10);
 
-        printf("Debug: %d\n", debug);
-        printf("PATH: %s\n", dataset_path);
-    
+        if(debug){
+            printf("Debug: %d\n", debug);
+            printf("PATH: %s\n", dataset_path);
+        }
     }
 
     read_grass_files();
+
+    if(debug)
+        puts("END");
 
 	return 0;
 }
