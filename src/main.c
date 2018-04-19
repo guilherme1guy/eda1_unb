@@ -159,6 +159,77 @@ int** read_files(char* datatype){
 
 }
 
+int contain(int* vec, int len, int number){
+    
+    int result = 0;
+
+    // TODO: optimize
+    for(int i = 0; i < len; i++){
+        
+        if(vec[i] == number){
+            result = 1;
+            break;
+        }
+    }
+
+    return result;
+}
+
+void get_random_set(int** ptr, int size, int** set, int** not_set){
+// randomly separate a ptr into two set, half the size of the original
+
+    if(debug)
+        puts("\nGenerating random number sequence");
+
+    // generate a random number sequence of n itens
+    int* random_num = (int*) calloc(size, sizeof(int));
+
+    if(random_num == NULL)
+        exit_with_error("\nMemory allocation error", 1);
+    
+    //start array with -1
+    memset(random_num, -1, size);
+
+    for(int i = 0; i < size/2; i++){
+        
+        int n = rand() % 50; // generate pseudo-random number [0...49]
+
+        if(contain(random_num, 50, n)){
+            i--;
+            continue;
+        }
+
+        random_num[i] = n;
+    }
+
+    int j = 25;
+    for(int i = 0; i < size; i++){
+        if(contain(random_num, 50, i) == 0){
+            random_num[j] = i;
+            j++;
+        }
+    }
+
+    if(debug){
+        printf("Generated random set:\n[");
+        for(int i = 0; i < size; i++){
+            printf(" %d ", random_num[i]);
+        }
+        printf("]\n");
+    }
+
+    // with generated numbers, we separete each set (A = rand[itens 0 to 24])
+    for(int i = 0; i < 25; i++)
+        set[i] = ptr[random_num[i]];
+    
+    // and we supply a set of not set itens (not A)
+    for(int i = 25; i < 50; i++)
+        not_set[i-25] = ptr[random_num[i]];
+
+    free(random_num);
+
+}
+
 int main(int argc, char **argv)
 {
     // argv[0] = (str) program executable
@@ -182,7 +253,40 @@ int main(int argc, char **argv)
     int** grass = read_files("/grass/grass_");
     int** asphalt = read_files("/asphalt/asphalt_");
 
+    if(debug)
+        puts("===Allocating memory for sets===");
+
+    // alocating memory for grass sets
+    int** grass_learn_set = (int**) calloc(25, sizeof(int*));
+    int** grass_test_set = (int**) calloc(25, sizeof(int*));
+
+    if(grass_test_set == NULL || grass_learn_set == NULL)
+        exit_with_error("\nMemory allocation error", 1);
+
+    get_random_set(grass, 50, grass_learn_set, grass_test_set);
+
+    // alocating asphalt sets
+    int** asphalt_learn_set = (int**) calloc(25, sizeof(int*));
+    int** asphalt_test_set = (int**) calloc(25, sizeof(int*));
+
+    if(asphalt_test_set == NULL || asphalt_learn_set == NULL)
+        exit_with_error("\nMemory allocation error", 1);
+
+    get_random_set(grass, 50, asphalt_learn_set, asphalt_test_set);
+
+    // TODO: proccess data
+
+
+    // free memory
+    if(debug)
+        puts("===Freeing set memory===");
+
     free_data(grass, 50);
+    // since the members of grass where cleaned, we can
+    // clean just the set reference 
+    free(grass_test_set);
+    free(grass_learn_set);
+
     free_data(asphalt, 50);
 
     if(debug)
