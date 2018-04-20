@@ -20,6 +20,7 @@ void free_data(int** ptr, int len){
 
     if(debug)
         puts("Freeing members of **ptr");
+    
     for(int i = 0; i < len; i++){
         free(ptr[i]);
     }
@@ -36,7 +37,7 @@ int* read_txt_file(char* filename){
     
 
     FILE* file = fopen(filename, "r");
-
+    
     if(file == NULL){
         char error[255] = "Cannot open file: ";
         strcat(error, filename);
@@ -122,8 +123,95 @@ char* get_filename(char* path, int id, char* postfix){
     return filename;
 }
 
+int* calculate_ILBP_for_marixt(int* mat, int lin, int col){
+    
+    int* ilbp = (int *) calloc(lin*col, sizeof(int));
+
+    if(ilbp == NULL)
+        exit_with_error("Error alocating memory", 1);
+
+    for(int i = 0; i < lin; i++){
+        for(int j = 0; j < col; j++){
+
+            int sub_matrix[3][3];
+
+            // separate sub-matrix acording to rules
+            // we will consider the outside of main matrix as 0
+
+            // top line
+            sub_matrix[0][0] = (i == 0 || j == 0) ? 0 : *(mat + ((i - 1) * col) + (j - 1));
+            sub_matrix[0][1] = (i == 0) ? 0 : *(mat + ((i - 1) * col) + j);
+            sub_matrix[0][2] = (i == 0 || j == (col - 1)) ? 0 : *(mat + (i - 1 * col) + (j + 1));
+
+            // center line
+            sub_matrix[1][0] = (j == 0) ? 0 : *(mat + (i * col) + (j - 1));
+            sub_matrix[1][1] = *(mat + (i * col) + j); // center piece 
+            sub_matrix[1][2] = (j == (col - 1)) ? 0 : *(mat + (i * col) + (j + 1));
+
+            // botton line
+            sub_matrix[2][0] = (i == (lin - 1) || j == 0) ? 0 : *(mat + ((i + 1) * col) + (j - 1));
+            sub_matrix[2][1] = (i == (lin - 1)) ? 0 : *(mat + ((i + 1) * col) + j);
+            sub_matrix[2][2] = (i == (lin - 1) || j == (col - 1)) ? 0 : *(mat + (i + 1 * col) + (j + 1));
+
+            // calculate the average value of the sub-matrix 
+            double avg = 0;
+            for(int x = 0; x < 3; x++){
+                for(int y = 0; y < 3; y++){
+                    avg += sub_matrix[x][y];
+                }
+            }
+
+            avg = avg/9;
+
+            // find the lowest value in binary
+            
+            // a unsigned short has 16 bits (2 bytes)
+            unsigned short bin = 0; //0000 0000 0000 0000
+            
+            // find the initial value before shifts to determine lowest
+            for(int x = 0; x < 3; x++){
+                for(int y = 0; y < 3; y++){
+                    
+                    bin =  bin << 1; // shift bin to the left by 1 bit
+                    
+                    if(sub_matrix[x][y] >= avg){
+                        bin = bin | 0x0001; // bitwise OR with 0000 0000 0000 0001 (to insert a 1 on the end)
+                    } // there is no need to insert a 0             
+                }
+            }
+
+            // now we have the bit representing the current value
+            // we want to make it rotation safe, to do it we will shift the binary
+            // and find the lowest value
+
+            // NOTE: unsigned short (unsigned, 16bits) to int (signed, 32bits) preserves value
+            int lowest_bin_num = bin; // initialize with bin
+
+            for(int k = 0; k < 9; k++){
+                
+                unsigned short extracted = bin & 0x0100; // 0x0010 = 0000 0001 0000 0000
+                extracted = extracted >> 8; // shift by 8 => 0000 000X 0000 0000 >> 0000 0000 0000 000X
+                
+                bin = bin << 1; // shift bin to left by 1 bit
+
+                bin = bin | extracted; // insert the extracted bit on the end on bin
+                bin = bin & 0x01FF; // clean the unused part, 0x01FF = 0000 0001 1111 1111 
+
+                if(bin < lowest_bin_num)
+                    lowest_bin_num = bin;                 
+
+            }
+
+            *(ilbp + (i * col) + j) = lowest_bin_num; // save lowest value from rotations into ilbp matrix 
+        }
+    } 
+
+    return ilbp;
+}
+
 int** read_files(char* datatype){
-    // read all grass files and return a pointer to an array with all of them
+    // read all txt files and return a pointer to an array with the normalized frequence vector
+    // of each image
 
     char* path = calloc(255, sizeof(char));
 
@@ -144,8 +232,11 @@ int** read_files(char* datatype){
 
         int *mat = read_txt_file(filename);
 
-        read_data[i] = mat;
+        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col);
 
+        read_data[i] = ilbp;
+
+        free(mat);
         free(filename);
     }
 
@@ -167,6 +258,7 @@ int contain(int* vec, int len, int number){
     int result = 0;
 
     // TODO: optimize
+    // for the current use case, we can afford to use a linear search
     for(int i = 0; i < len; i++){
         
         if(vec[i] == number){
