@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DATATYPE_GRASS "/grass/grass_"
+#define DATATYPE_ASPHALT "/asphalt/asphalt_"
+
 int debug = 0;
 char *dataset_path;
 
@@ -232,6 +235,32 @@ void get_random_set(int** ptr, int size, int** set, int** not_set){
 
 }
 
+void get_ILBP_set_for_data_type(char* datatype, int set_size, int** full_set, int** learn_set,  int** test_set ){
+// receive a datatype and places where to store data, read data from disk, calc ILBP
+// and save into pointers
+// NOTE: pass NULL pointers
+
+    if(debug)
+        printf("\nPreparing ILBP for %s datatype\nReading files...\n", datatype);
+
+    // read files and convert to ILBP
+    full_set = read_files(datatype);
+
+    if(debug)
+        printf("\nDatatype: %s\nSeparating read data into sets", datatype);
+
+    // alocating memory for sets
+    learn_set = (int**) calloc(set_size/2, sizeof(int*));
+    test_set = (int**) calloc(set_size/2, sizeof(int*));
+
+    if(test_set == NULL || learn_set == NULL)
+        exit_with_error("\nMemory allocation error", 1);
+
+    // separate full_set into a learn_set and a test set
+    get_random_set(full_set, set_size, learn_set, test_set);
+
+}
+
 int main(int argc, char **argv)
 {
     // argv[0] = (str) program executable
@@ -252,32 +281,17 @@ int main(int argc, char **argv)
         }
     }
 
-    int** grass = read_files("/grass/grass_");
-    int** asphalt = read_files("/asphalt/asphalt_");
+    int** grass;
+    int** grass_learn_set;
+    int** grass_test_set;
+    get_ILBP_set_for_data_type(DATATYPE_GRASS, 50, grass, grass_learn_set, grass_test_set);
 
-    if(debug)
-        puts("===Allocating memory for sets===");
-
-    // alocating memory for grass sets
-    int** grass_learn_set = (int**) calloc(25, sizeof(int*));
-    int** grass_test_set = (int**) calloc(25, sizeof(int*));
-
-    if(grass_test_set == NULL || grass_learn_set == NULL)
-        exit_with_error("\nMemory allocation error", 1);
-
-    get_random_set(grass, 50, grass_learn_set, grass_test_set);
-
-    // alocating asphalt sets
-    int** asphalt_learn_set = (int**) calloc(25, sizeof(int*));
-    int** asphalt_test_set = (int**) calloc(25, sizeof(int*));
-
-    if(asphalt_test_set == NULL || asphalt_learn_set == NULL)
-        exit_with_error("\nMemory allocation error", 1);
-
-    get_random_set(grass, 50, asphalt_learn_set, asphalt_test_set);
+    int** asphalt;
+    int** asphalt_learn_set;
+    int** asphalt_test_set;
+    get_ILBP_set_for_data_type(DATATYPE_ASPHALT, 50, asphalt, asphalt_learn_set, asphalt_test_set);
 
     // TODO: proccess data
-
 
     // free memory
     if(debug)
@@ -290,6 +304,8 @@ int main(int argc, char **argv)
     free(grass_learn_set);
 
     free_data(asphalt, 50);
+    free(asphalt_learn_set);
+    free(asphalt_test_set);
 
     if(debug)
         puts("END");
