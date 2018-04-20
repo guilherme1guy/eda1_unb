@@ -16,19 +16,25 @@ void exit_with_error(char* error, int code){
     exit(code);
 }
 
-void free_data(int** ptr, int len){
+void free_data(int*** ptr){
 
     if(debug)
-        puts("Freeing members of **ptr");
+        printf("\nFreeing members of **ptr: %p\n", *ptr);
     
-    for(int i = 0; i < len; i++){
-        free(ptr[i]);
+    for(int i = 0; *(*ptr + i) != NULL; i++){
+       // if(debug)
+       //    printf("\nFreeing ptr[%d]: %p\n", i, *(*ptr + i));
+
+        free(*(*ptr + i));
     }
 
     if(debug)
-        puts("Freeing **ptr");
+        printf("\nFreeing **ptr: %p\n", *ptr);
     
-    free(ptr);
+    free(*ptr);
+
+    if(debug)
+        printf("\nFREE");
 }
 
 int* read_txt_file(char* filename){
@@ -176,7 +182,7 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col){
                     
                     if(sub_matrix[x][y] >= avg){
                         bin = bin | 0x0001; // bitwise OR with 0000 0000 0000 0001 (to insert a 1 on the end)
-                    } // there is no need to insert a 0             
+                    } // there is no need to insert a 0      
                 }
             }
 
@@ -234,7 +240,7 @@ int** read_files(char* datatype){
 
         int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col);
 
-        read_data[i] = ilbp;
+        *(read_data + i - 1) = ilbp;
 
         free(mat);
         free(filename);
@@ -270,7 +276,7 @@ int contain(int* vec, int len, int number){
     return result;
 }
 
-void get_random_set(int** ptr, int size, int** set, int** not_set){
+void get_random_set(int*** ptr, int size, int*** set, int*** not_set){
 // randomly separate a ptr into two set, half the size of the original
 
     if(debug)
@@ -317,17 +323,17 @@ void get_random_set(int** ptr, int size, int** set, int** not_set){
 
     // with generated numbers, we separete each set (A = rand[itens 0 to size/2])
     for(int i = 0; i < size/2; i++)
-        set[i] = ptr[random_num[i]];
+        *(*set + i) = *(*ptr + (random_num[i]));
     
     // and we supply a set of not set itens (not A)
-    for(int i = size/2; i < size; i++)
-        not_set[i - (size/2)] = ptr[random_num[i]];
+    //for(int i = size/2; i < size; i++)
+    //    not_set[i - (size/2)] = ptr[random_num[i]];
 
     free(random_num);
 
 }
 
-void get_ILBP_set_for_data_type(char* datatype, int set_size, int** full_set, int** learn_set,  int** test_set ){
+void get_ILBP_set_for_data_type(char* datatype, int set_size, int*** full_set, int*** learn_set,  int*** test_set ){
 // receive a datatype and places where to store data, read data from disk, calc ILBP
 // and save into pointers
 // NOTE: pass NULL pointers
@@ -336,21 +342,17 @@ void get_ILBP_set_for_data_type(char* datatype, int set_size, int** full_set, in
         printf("\nPreparing ILBP for %s datatype\nReading files...\n", datatype);
 
     // read files and convert to ILBP
-    full_set = read_files(datatype);
+    *full_set = read_files(datatype);
 
     if(debug)
         printf("\nDatatype: %s\nSeparating read data into sets", datatype);
 
     // alocating memory for sets
-    learn_set = (int**) calloc(set_size/2, sizeof(int*));
-    test_set = (int**) calloc(set_size/2, sizeof(int*));
+    *learn_set = (int**) calloc(set_size/2, sizeof(int*));
+    *test_set = (int**) calloc(set_size/2, sizeof(int*));
 
     if(test_set == NULL || learn_set == NULL)
         exit_with_error("\nMemory allocation error", 1);
-
-    // separate full_set into a learn_set and a test set
-    get_random_set(full_set, set_size, learn_set, test_set);
-
 }
 
 int main(int argc, char **argv)
@@ -376,31 +378,40 @@ int main(int argc, char **argv)
     int** grass;
     int** grass_learn_set;
     int** grass_test_set;
-    get_ILBP_set_for_data_type(DATATYPE_GRASS, 50, grass, grass_learn_set, grass_test_set);
+
+    get_ILBP_set_for_data_type(DATATYPE_GRASS, 50, &grass, &grass_learn_set, &grass_test_set);
+
+    // separate full_set into a learn_set and a test set
+    get_random_set(&grass, 50, &grass_learn_set, &grass_test_set);
 
     int** asphalt;
     int** asphalt_learn_set;
     int** asphalt_test_set;
-    get_ILBP_set_for_data_type(DATATYPE_ASPHALT, 50, asphalt, asphalt_learn_set, asphalt_test_set);
+    get_ILBP_set_for_data_type(DATATYPE_ASPHALT, 50, &asphalt, &asphalt_learn_set, &asphalt_test_set);
+
+    get_random_set(&asphalt, 50, &asphalt_learn_set, &asphalt_test_set);
 
     // TODO: proccess data
 
     // free memory
     if(debug)
-        puts("===Freeing set memory===");
+        printf("\n===Freeing grass sets memory===\ngrass = %p\ngrass_learn = %p\ngrass_test = %p\n", grass, grass_learn_set, grass_test_set);
 
-    free_data(grass, 50);
+    free_data(&grass);
     // since the members of grass where cleaned, we can
     // clean just the set reference 
     free(grass_test_set);
     free(grass_learn_set);
 
-    free_data(asphalt, 50);
+    if(debug)
+        printf("\n===Freeing asphalt sets memory===\nasphalt = %p\nasphalt_learn = %p\nasphalt_test = %p\n", asphalt, asphalt_learn_set, asphalt_test_set);
+
+    free_data(&asphalt);
     free(asphalt_learn_set);
     free(asphalt_test_set);
 
     if(debug)
-        puts("END");
+        puts("\nEND");
 
 	return 0;
 }
