@@ -363,7 +363,7 @@ int main(int argc, char **argv)
     
     dataset_path = argv[1];
 
-    if(argc > 1){
+    if(argc > 2){
 
         // convert debug var from char to int
         char *c = argv[2];
