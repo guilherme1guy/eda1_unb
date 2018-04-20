@@ -190,11 +190,12 @@ void get_random_set(int** ptr, int size, int** set, int** not_set){
     //start array with -1
     memset(random_num, -1, size);
 
+    // randomly generate first positions
     for(int i = 0; i < size/2; i++){
         
-        int n = rand() % 50; // generate pseudo-random number [0...49]
+        int n = rand() % size; // generate pseudo-random number [0...size]
 
-        if(contain(random_num, 50, n)){
+        if(contain(random_num, size, n)){
             i--;
             continue;
         }
@@ -202,9 +203,10 @@ void get_random_set(int** ptr, int size, int** set, int** not_set){
         random_num[i] = n;
     }
 
-    int j = 25;
+    // after half of the random num generation, we just complete with what is missing
+    int j = size/2;
     for(int i = 0; i < size; i++){
-        if(contain(random_num, 50, i) == 0){
+        if(contain(random_num, size, i) == 0){
             random_num[j] = i;
             j++;
         }
@@ -218,13 +220,13 @@ void get_random_set(int** ptr, int size, int** set, int** not_set){
         printf("]\n");
     }
 
-    // with generated numbers, we separete each set (A = rand[itens 0 to 24])
-    for(int i = 0; i < 25; i++)
+    // with generated numbers, we separete each set (A = rand[itens 0 to size/2])
+    for(int i = 0; i < size/2; i++)
         set[i] = ptr[random_num[i]];
     
     // and we supply a set of not set itens (not A)
-    for(int i = 25; i < 50; i++)
-        not_set[i-25] = ptr[random_num[i]];
+    for(int i = size/2; i < size; i++)
+        not_set[i - (size/2)] = ptr[random_num[i]];
 
     free(random_num);
 
