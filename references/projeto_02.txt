@@ -1,0 +1,46 @@
+ILBP e 4 métricas GLCM.
+calcular frequencia para ver se é seguro ou nao o pouso.
+ler o tamanho, alocar dinamicamente e carregar em uma matriz.
+separar em conjuntos, pode sortear com indice.
+escolha randomica das imagens. 
+
+pegar o arquivo txt, ler a matriz;
+aplicar ILBP;
+
+(LBP)
+gerar outra matriz de comparação do pixel central;
+contatenar;
+
+(ILBP)
+
+gerar matriz de comparação so que desta vez sendo a media o valor de comparação, a nova matriz sera de valor binario em relaçao a matriz comparada;
+contatenar(lineariza os valores binarios da matriz e gera um valor, um numero binario);
+
+rotacionar para achar qual o menor valor a ser contatenado;
+
+conta a quantidade de ocorrencias começando em 0 - calloc
+
+quantas vezes acontece o valor T a direita de x; (implementar uma lista)
+
+pegar as matrizes e tirar metricas dela
+
+contraste - (i - j)²glcm(i,j)
+nao vai fazer um ali que eu esqueci o nome
+Energia - glcm(i,j)
+
+512 - vetor de ILBP
+24 - vetor de GLCM
+vetor de tamanho 536
+
+normalizar o vetor 
+
+para cada imagem vou gerar um vetor ILBP um glcm e normalizalos
+
+
+fazer a media entre elementos dos vetores de cada conjunto
+
+treinamento do sistema guarda dois vetores para saber oq é grama e o q é asfalto
+
+classificar imagem calculando a distancia euclidiana entre o seu vetor de frequencia normalizado e os dois vetores de medias obtidos no treinamento do sistema
+
+metricas: taxa de acerto, taxa de falsa aceitação, taxa de falsa rejeição.
