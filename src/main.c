@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define DATATYPE_GRASS "/grass/grass_"
 #define DATATYPE_ASPHALT "/asphalt/asphalt_"
@@ -283,13 +284,14 @@ void get_random_set(int*** ptr, int size, int*** set, int*** not_set){
         puts("\nGenerating random number sequence");
 
     // generate a random number sequence of n itens
+    srand(time(NULL)); 
     int* random_num = (int*) calloc(size, sizeof(int));
 
     if(random_num == NULL)
         exit_with_error("\nMemory allocation error", 1);
     
     //start array with -1
-    memset(random_num, -1, size);
+    memset(random_num, -1, size * sizeof(int));
 
     // randomly generate first positions
     for(int i = 0; i < size/2; i++){
