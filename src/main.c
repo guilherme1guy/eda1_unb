@@ -176,17 +176,41 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col){
             unsigned short bin = 0; //0000 0000 0000 0000
             
             // find the initial value before shifts to determine lowest
-            for(int x = 0; x < 3; x++){
-                for(int y = 0; y < 3; y++){
-                    
-                    bin =  bin << 1; // shift bin to the left by 1 bit
-                    
-                    if(sub_matrix[x][y] >= avg){
-                        bin = bin | 0x0001; // bitwise OR with 0000 0000 0000 0001 (to insert a 1 on the end)
-                    } // there is no need to insert a 0      
+            // loop should do the following path: x,y -> 0,0 -> 0,1 -> 0,2 -> 1,2 -> 2,2 -> 2,1 -> 2,0 -> 1,0 -> 1,1 
+            int x = 0, y = 0;
+            while(1){
+                bin =  bin << 1; // shift bin to the left by 1 bit
+                                
+                if(sub_matrix[x][y] >= avg){
+                    bin = bin | 0x0001; // bitwise OR with 0000 0000 0000 0001 (to insert a 1 on the end)
+                } // there is no need to insert a 0      
+
+                
+                if(x == 1 && y == 1){
+                    break;
+                }
+
+                if((x == 0 || x == 1) && y != 2){
+                    y++;
+                    continue;
+                }
+
+                if(y == 2 && x != 2){
+                    x++;
+                    y = 2;
+                    continue;
+                }
+
+                if(x == 2 && y != 0){
+                    x = 2;
+                    y--;
+                    continue;
+                }else{
+                    x = 1;
+                    y = 0;
                 }
             }
-
+            
             // now we have the bit representing the current value
             // we want to make it rotation safe, to do it we will shift the binary
             // and find the lowest value
