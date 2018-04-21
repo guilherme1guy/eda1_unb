@@ -267,7 +267,7 @@ int** read_files(char* datatype){
 
         int *mat = read_txt_file(filename);
 
-        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col, 255);
+        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col, 1024);
 
         *(read_data + i - 1) = ilbp;
 
