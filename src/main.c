@@ -17,6 +17,7 @@ void exit_with_error(char* error, int code){
     exit(code);
 }
 
+
 void free_data(int*** ptr){
 
     if(debug)
@@ -130,9 +131,9 @@ char* get_filename(char* path, int id, char* postfix){
     return filename;
 }
 
-int* calculate_ILBP_for_marixt(int* mat, int lin, int col){
+int* calculate_ILBP_for_marixt(int* mat, int lin, int col, int max_gray_level){
     
-    int* ilbp = (int *) calloc(lin*col, sizeof(int));
+    int* ilbp = (int *) calloc(max_gray_level, sizeof(int));
 
     if(ilbp == NULL)
         exit_with_error("Error alocating memory", 1);
@@ -232,8 +233,11 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col){
                     lowest_bin_num = bin;                 
 
             }
+            // printf("HERE\n");
+            printf("%d %d\n", lowest_bin_num, ilbp[lowest_bin_num]);
 
-            *(ilbp + (i * col) + j) = lowest_bin_num; // save lowest value from rotations into ilbp matrix 
+            // *(ilbp + (i * col) + j) = lowest_bin_num; // save lowest value from rotations into ilbp matrix 
+            *(ilbp + lowest_bin_num ) += 1;
         }
     } 
 
@@ -263,7 +267,7 @@ int** read_files(char* datatype){
 
         int *mat = read_txt_file(filename);
 
-        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col);
+        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col, 255);
 
         *(read_data + i - 1) = ilbp;
 
