@@ -6,6 +6,8 @@
 #define DATATYPE_GRASS "/grass/grass_"
 #define DATATYPE_ASPHALT "/asphalt/asphalt_"
 
+#define MAX_GRAY_LEVEL 1024 
+
 int debug = 0;
 char *dataset_path;
 
@@ -267,7 +269,7 @@ int** read_files(char* datatype){
 
         int *mat = read_txt_file(filename);
 
-        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col, 1024);
+        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col, MAX_GRAY_LEVEL); //return vec[MAX_GRAY_LEVEL]
 
         *(read_data + i - 1) = ilbp;
 
