@@ -149,7 +149,7 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col, int max_gray_level){
             // top line
             sub_matrix[0][0] = (i == 0 || j == 0) ? 0 : *(mat + ((i - 1) * col) + (j - 1));
             sub_matrix[0][1] = (i == 0) ? 0 : *(mat + ((i - 1) * col) + j);
-            sub_matrix[0][2] = (i == 0 || j == (col - 1)) ? 0 : *(mat + (i - 1 * col) + (j + 1));
+            sub_matrix[0][2] = (i == 0 || j == (col - 1)) ? 0 : *(mat + ((i - 1) * col) + (j + 1));
 
             // center line
             sub_matrix[1][0] = (j == 0) ? 0 : *(mat + (i * col) + (j - 1));
@@ -159,7 +159,7 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col, int max_gray_level){
             // botton line
             sub_matrix[2][0] = (i == (lin - 1) || j == 0) ? 0 : *(mat + ((i + 1) * col) + (j - 1));
             sub_matrix[2][1] = (i == (lin - 1)) ? 0 : *(mat + ((i + 1) * col) + j);
-            sub_matrix[2][2] = (i == (lin - 1) || j == (col - 1)) ? 0 : *(mat + (i + 1 * col) + (j + 1));
+            sub_matrix[2][2] = (i == (lin - 1) || j == (col - 1)) ? 0 : *(mat + ((i + 1) * col) + (j + 1));
 
             // calculate the average value of the sub-matrix 
             double avg = 0;
