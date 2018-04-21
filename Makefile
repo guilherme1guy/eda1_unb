@@ -4,7 +4,7 @@ clean:
 	
 build:
 	mkdir build/
-	gcc src/main.c -o build/main
+	gcc src/main.c -o build/main -lm -Wall
 
 run:
 	./build/main $(CURDIR)/DataSet 1

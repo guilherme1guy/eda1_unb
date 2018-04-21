@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #define DATATYPE_GRASS "/grass/grass_"
 #define DATATYPE_ASPHALT "/asphalt/asphalt_"
 
-#define MAX_GRAY_LEVEL 1024 
+#define MAX_GRAY_LEVEL 255 
 
 int debug = 0;
 char *dataset_path;
@@ -20,7 +21,7 @@ void exit_with_error(char* error, int code){
 }
 
 
-void free_data(int*** ptr){
+void free_data(double*** ptr){
 
     if(debug)
         printf("\nFreeing members of **ptr: %p\n", *ptr);
@@ -133,9 +134,128 @@ char* get_filename(char* path, int id, char* postfix){
     return filename;
 }
 
-int* calculate_ILBP_for_marixt(int* mat, int lin, int col, int max_gray_level){
+double* get_glcm_for_direction(int direction[2], int* mat, int lin, int col, int max_gray_level){
+// get a direction and calculate glcm values for that direction
+
+    // direction matrix:
+    // [x,y]    [0,0][0,1][0,2]     []     [UP]     []
+    // [x,y]    [1,0][1,1][1,2]     [LEFT] [0]      [RIGHT]
+    // [x,y]    [2,0][2,1][2,2]     []     [BOTTON] []
+
+    // filter direction to convert it from having a center in 1,1
+    // to having a center in 0,0 (because math...)
+    direction[0] -= 1;
+    direction[1] -= 1;
+
+    double contrast = 0;
+    double energy = 0;
+    double homogeneity = 0;
+
+    // create referential GLCM matrix
+    double* glcm_matrix = calloc(max_gray_level*max_gray_level, sizeof(double));
+
+    // i,j are for the referential matrix (glcm_matrix), the value on 
+    // a position i,j represent the following:
+    // "How many times does J happens on DIRECTION of I?" (beeing direction defined above)
+    for(int i = 0; i < max_gray_level; i++){
+        for(int j = 0; j < max_gray_level; j++){
+            
+            // this loop scans the img matrix searching for instances of:
+            // mat[x][y] == j and mat[X,Y on DIRECTION] == i 
+            for(int x = 0; x < lin; x++){
+                for(int y = 0; y < col; y++){
+                    
+                    if(*(mat + (x*col) + y) == j){
+
+                        // after finding a j that corresponds to our search
+                        // we need apply the direction to test if there is a
+                        // i in the DIRECTION form j
+
+                        // how to apply DIRECTION? I DON'T KNOW!!! (yet)
+
+                        // check if we are inside tha matrix bounds
+                        if(
+                            x + direction[0] < 0 || x + direction[0] == lin - 1
+                            ||
+                            y + direction[1] < 0 || y + direction[1] == col - 1
+                        ){
+                            // we are unable to check if mat[x][y] == j and mat[X,Y on DIRECTION] == i 
+                            // when mat[x,y on DIRECTION] is outside the matrix
+                            continue; 
+                        }
+
+
+                        // this should apply it
+                        if(*(mat + ((x + direction[0])*col) + (y + direction[1]))  == i){
+                            
+                            *(glcm_matrix + (i*max_gray_level) + j) += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < max_gray_level; i++){
+        for(int j = 0; j < max_gray_level; j++){
+           
+            double current_value = *(glcm_matrix + (i*max_gray_level) + j);
+           
+            contrast += pow(fabs(i - j), 2) * current_value;
+            energy += pow(current_value, 2);
+            homogeneity += current_value / (1 + abs(i - j));
+        }
+    }
+
+    double *metrics = calloc(3, sizeof(double));
     
-    int* ilbp = (int *) calloc(max_gray_level, sizeof(int));
+    metrics[0] = contrast;
+    metrics[1] = energy;
+    metrics[2] = homogeneity;
+
+    free(glcm_matrix);
+    
+    return metrics;
+}
+
+double* calculate_GLCM_for_matrix(int* mat, int lin, int col, int max_gray_level){
+// calculate contrast, energy and homogeneity for a given matrix
+// on all 8 possible directions and return a vector containing all the 24 metrics
+// metric order on vector: contrast, energy, homogeneity 
+    
+    double *glcm = calloc(24, sizeof(double));
+
+    // considerating the following pattern:
+    // direction matrix:
+    // [x,y]    [0,0][0,1][0,2]     []     [UP]     []
+    // [x,y]    [1,0][1,1][1,2]     [LEFT] [0]      [RIGHT]
+    // [x,y]    [2,0][2,1][2,2]     []     [BOTTON] []
+    // then [0,1] is a vector pointing upwards, [2,1] points to botton and etc... 
+    int k = 0;
+    for(int direction_x = 0; direction_x < 3; direction_x++){
+        for(int direction_y = 0; direction_y < 3; direction_y++){
+            if(direction_x == 1 && direction_y == 1){
+                continue; // skip unwanted direction
+            }
+
+            int vec[2] = {direction_x, direction_y};
+
+            double* ptr = glcm + k;
+            *ptr = *get_glcm_for_direction(vec, mat, img_lin, img_col, max_gray_level);
+            
+            k += 3;
+        }
+    }
+
+    return glcm;
+
+}
+
+int* calculate_ILBP_for_marixt(int* mat, int lin, int col){
+    
+    // the ILBP recieves 9 bits, the max value that will be saved is
+    // 2^9 - 1
+    int* ilbp = (int *) calloc(pow(2, 9), sizeof(int));
 
     if(ilbp == NULL)
         exit_with_error("Error alocating memory", 1);
@@ -236,7 +356,7 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col, int max_gray_level){
 
             }
             // printf("HERE\n");
-            printf("%d %d\n", lowest_bin_num, ilbp[lowest_bin_num]);
+            //printf("%d %d\n", lowest_bin_num, ilbp[lowest_bin_num]);
 
             // *(ilbp + (i * col) + j) = lowest_bin_num; // save lowest value from rotations into ilbp matrix 
             *(ilbp + lowest_bin_num ) += 1;
@@ -246,7 +366,7 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col, int max_gray_level){
     return ilbp;
 }
 
-int** read_files(char* datatype){
+double** read_files(char* datatype){
     // read all txt files and return a pointer to an array with the normalized frequence vector
     // of each image
 
@@ -258,7 +378,7 @@ int** read_files(char* datatype){
     strcpy(path, dataset_path);
     strcat(path, datatype);
 
-    int **read_data = (int**) calloc(50, sizeof(int*));
+    double **read_data = (double**) calloc(50, sizeof(double*));
 
     if(read_data == NULL)
         exit_with_error("\nMemory allocation error", 1);
@@ -269,9 +389,20 @@ int** read_files(char* datatype){
 
         int *mat = read_txt_file(filename);
 
-        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col, MAX_GRAY_LEVEL); //return vec[MAX_GRAY_LEVEL]
+        int *ilbp = calculate_ILBP_for_marixt(mat, img_lin, img_col); //return vec[MAX_GRAY_LEVEL]
 
-        *(read_data + i - 1) = ilbp;
+        double *glcm = calculate_GLCM_for_matrix(mat, img_lin, img_col, MAX_GRAY_LEVEL); // return vec[24]
+
+        double *img_descriptor = calloc(MAX_GRAY_LEVEL + 24, sizeof(double)); // concatenate ilbp and glcm
+
+        for(int j = 0; j < (1024 + 24); j++){
+            
+            *(img_descriptor + j) = (j < MAX_GRAY_LEVEL) ? (double) *(ilbp + j) : *(glcm + j - MAX_GRAY_LEVEL);
+        }
+
+        // TODO: normalize img_descriptor
+
+        *(read_data + i - 1) = img_descriptor;
 
         free(mat);
         free(filename);
@@ -307,7 +438,7 @@ int contain(int* vec, int len, int number){
     return result;
 }
 
-void get_random_set(int*** ptr, int size, int*** set, int*** not_set){
+void get_random_set(double*** ptr, int size, double*** set, double*** not_set){
 // randomly separate a ptr into two set, half the size of the original
 
     if(debug)
@@ -365,7 +496,7 @@ void get_random_set(int*** ptr, int size, int*** set, int*** not_set){
 
 }
 
-void get_ILBP_set_for_data_type(char* datatype, int set_size, int*** full_set, int*** learn_set,  int*** test_set ){
+void get_ILBP_set_for_data_type(char* datatype, int set_size, double*** full_set, double*** learn_set,  double*** test_set ){
 // receive a datatype and places where to store data, read data from disk, calc ILBP
 // and save into pointers
 // NOTE: pass NULL pointers
@@ -380,8 +511,8 @@ void get_ILBP_set_for_data_type(char* datatype, int set_size, int*** full_set, i
         printf("\nDatatype: %s\nSeparating read data into sets", datatype);
 
     // alocating memory for sets
-    *learn_set = (int**) calloc(set_size/2, sizeof(int*));
-    *test_set = (int**) calloc(set_size/2, sizeof(int*));
+    *learn_set = (double**) calloc(set_size/2, sizeof(double*));
+    *test_set = (double**) calloc(set_size/2, sizeof(double*));
 
     if(test_set == NULL || learn_set == NULL)
         exit_with_error("\nMemory allocation error", 1);
@@ -407,18 +538,18 @@ int main(int argc, char **argv)
         }
     }
 
-    int** grass;
-    int** grass_learn_set;
-    int** grass_test_set;
+    double** grass;
+    double** grass_learn_set;
+    double** grass_test_set;
 
     get_ILBP_set_for_data_type(DATATYPE_GRASS, 50, &grass, &grass_learn_set, &grass_test_set);
 
     // separate full_set into a learn_set and a test set
     get_random_set(&grass, 50, &grass_learn_set, &grass_test_set);
 
-    int** asphalt;
-    int** asphalt_learn_set;
-    int** asphalt_test_set;
+    double** asphalt;
+    double** asphalt_learn_set;
+    double** asphalt_test_set;
     get_ILBP_set_for_data_type(DATATYPE_ASPHALT, 50, &asphalt, &asphalt_learn_set, &asphalt_test_set);
 
     get_random_set(&asphalt, 50, &asphalt_learn_set, &asphalt_test_set);
@@ -442,8 +573,9 @@ int main(int argc, char **argv)
     free(asphalt_learn_set);
     free(asphalt_test_set);
 
-    if(debug)
+    if(debug){
         puts("\nEND");
+    }
 
 	return 0;
 }
