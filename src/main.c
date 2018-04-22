@@ -7,7 +7,7 @@
 #define DATATYPE_GRASS "/grass/grass_"
 #define DATATYPE_ASPHALT "/asphalt/asphalt_"
 
-#define MAX_GRAY_LEVEL 255 
+#define MAX_GRAY_LEVEL 256
 
 int debug = 0;
 char *dataset_path;
