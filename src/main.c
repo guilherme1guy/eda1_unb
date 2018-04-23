@@ -488,8 +488,8 @@ void get_random_set(double*** ptr, int size, double*** set, double*** not_set) {
         *(*set + i) = *(*ptr + (random_num[i]));
 
     // and we supply a set of not set itens (not A)
-    //for(int i = size/2; i < size; i++)
-    //    not_set[i - (size/2)] = ptr[random_num[i]];
+    for(int i = size/2; i < size; i++)
+        *(*not_set + i - (size/2)) = *(*ptr + random_num[i]);
 
     free(random_num);
 
