@@ -384,6 +384,8 @@ double** read_files(char* datatype) {
 
     for (int i = 1; i <= 50; i++) {
 
+        int ilbp_max_num = 512;z
+
         char *filename = get_filename(path, i, ".txt");
 
         int *mat = read_txt_file(filename);
@@ -392,11 +394,11 @@ double** read_files(char* datatype) {
 
         double *glcm = calculate_GLCM_for_matrix(mat, img_lin, img_col, MAX_GRAY_LEVEL); // return vec[24]
 
-        double *img_descriptor = calloc((MAX_GRAY_LEVEL + 24), sizeof(double)); // concatenate ilbp and glcm
+        double *img_descriptor = calloc((ilbp_max_num + 24), sizeof(double)); // concatenate ilbp and glcm
 
-        for (int j = 0; j < (MAX_GRAY_LEVEL + 24); j++) {
+        for (int j = 0; j < (ilbp_max_num + 24); j++) {
 
-            img_descriptor [j] = (j < MAX_GRAY_LEVEL) ? (double) ilbp[j] : glcm[j - MAX_GRAY_LEVEL];
+            img_descriptor [j] = (j < ilbp_max_num) ? (double) ilbp[j] : glcm[j - ilbp_max_num];
         }
 
         // TODO: normalize img_descriptor

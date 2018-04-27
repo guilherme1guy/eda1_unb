@@ -1,46 +1,64 @@
-ILBP e 4 métricas GLCM.
-calcular frequencia para ver se é seguro ou nao o pouso.
-ler o tamanho, alocar dinamicamente e carregar em uma matriz.
-separar em conjuntos, pode sortear com indice.
-escolha randomica das imagens. 
+======================================================================================================================================
+RESUMO
 
-pegar o arquivo txt, ler a matriz;
-aplicar ILBP;
+*ILBP e 4 métricas GLCM;
+*Calcular frequencia para realizar checagem de segurança;
+*Ler o tamanho, alocar dinamicamente e carregar em uma matriz;
+*Separar em conjuntos, pode sortear com indice;
+*Escolha randômica das imagens; 
+*Aplicar ILBP; ** gerado para cada imagem;
+*Aplicar GLCM; ** gerado para cada imagem;
+*Normalizar; ** gerado para cada imagem;
+*Classificar imagem - realizada com vetor de frequência normalizado calculado; ** gerado para cada imagem;
+*Imprimir métricas;
+
+*Breve explicação*
 
 (LBP)
 gerar outra matriz de comparação do pixel central;
 contatenar;
 
 (ILBP)
+*gerar matriz de comparação;
+*Realizar o calculo da media dos pontos ao redor do ponto central da matriz;
+*Nova matriz será de valor binário em relaçao a matriz comparada;
+========================================================================================================================================
+CALCULOS
 
-gerar matriz de comparação so que desta vez sendo a media o valor de comparação, a nova matriz sera de valor binario em relaçao a matriz comparada;
-contatenar(lineariza os valores binarios da matriz e gera um valor, um numero binario);
+*Contatenar(lineariza os valores binarios da matriz e gera um valor, um numero binario);
+*rotacionar para achar qual o menor valor a ser contatenado;
+*Conta a quantidade de ocorrencias começando em 0 - calloc;
+*Quantas vezes acontece o valor T a direita de x; (implementar uma lista);
 
-rotacionar para achar qual o menor valor a ser contatenado;
+Normalização do Vetor:
+	^Xi = (Xi - MIN(X))/MAX(X) - MIN(X);
+		MIN(X) = Menor valor encontrado no vetor 'X';
+		MAX(X) = Maior valor encontrado no vetor 'X';
+		^Xi = I-ésimo elemento do vetor 'X' normalizado;
+		Xi = I-ésimo elemento do vetor 'X';
 
-conta a quantidade de ocorrencias começando em 0 - calloc
+Calcular as metricas:
 
-quantas vezes acontece o valor T a direita de x; (implementar uma lista)
+*Contraste - (i - j)²glcm(i,j);
+*Energia - glcm(i,j);
 
-pegar as matrizes e tirar metricas dela
+Classificador:
 
-contraste - (i - j)²glcm(i,j)
-nao vai fazer um ali que eu esqueci o nome
-Energia - glcm(i,j)
+*Distância euclidiana:
+	D(x,y) = sqrt(pow((x1 - x2), 2) + pow((y1 - y2),2);
+*Entre a média dos 2 vetores de médias obtidos no treinamento(em sequencia descrito em ARMAZENAMENTO '**') e o vetor normalizado;
 
-512 - vetor de ILBP
-24 - vetor de GLCM
-vetor de tamanho 536
+Métricas (printadas em tela):
+	*Taxa de acerto - % de imagens classificadas corretamente;
+	*Taxa de falsa aceitação - % de imagens que pertencem a "Asfalto" mas foram classificadas como "Grama";
+	*Taxa de falsa rejeição - % de imagens que pertencem a "Grama" mas foram classificadas como "Asfalto";
+========================================================================================================================================
+ARMAZENAMENTO
 
-normalizar o vetor 
-
-para cada imagem vou gerar um vetor ILBP um glcm e normalizalos
-
-
-fazer a media entre elementos dos vetores de cada conjunto
-
-treinamento do sistema guarda dois vetores para saber oq é grama e o q é asfalto
-
-classificar imagem calculando a distancia euclidiana entre o seu vetor de frequencia normalizado e os dois vetores de medias obtidos no treinamento do sistema
-
-metricas: taxa de acerto, taxa de falsa aceitação, taxa de falsa rejeição.
+*512 - Vetor de ILBP;
+*24 - Vetor de GLCM;
+*536 - Vetor total;
+*Vetor de cada imagem; **
+*Média dos vetores de cada classe; **
+*Vetor de Frequência Normalizado; **
+*Distancia euclidiana;
