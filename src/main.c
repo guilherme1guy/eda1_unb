@@ -110,11 +110,11 @@ char* get_filename(char* path, int id, char* postfix) {
     // get_filename("dataset/grass/grass_", 01, ".txt")
     // == "dataset/grass/grass_01.txt"
 
-    // allocate space for filename
-    char* filename = calloc(
-        (strlen(path) + strlen(postfix) + 2), //base path + postfix + 2 for number
-        sizeof(char)
-    );
+	// allocate space for filename
+	char* filename = calloc(
+		(strlen(path) + strlen(postfix) + 12), //base path + postfix + 12 for buffer
+		sizeof(char)
+	);
 
     if (filename == NULL)
         exit_with_error("\nError allocating memory for filename!", 1);
