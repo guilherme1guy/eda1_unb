@@ -354,16 +354,49 @@ int* calculate_ILBP_for_marixt(int* mat, int lin, int col) {
 					lowest_bin_num = bin;
 
 			}
-			// printf("HERE\n");
-			//printf("%d %d\n", lowest_bin_num, ilbp[lowest_bin_num]);
 
-			// *(ilbp + (i * col) + j) = lowest_bin_num; // save lowest value from rotations into ilbp matrix
 			*(ilbp + lowest_bin_num) += 1;
 		}
 	}
 
 	return ilbp;
 }
+
+double max_element(double* vector, int len){
+
+    double max = vector[0];
+
+    for(int i = 0; i < len; i++){
+        if(vector[i] > max){
+            max = vector[i];
+        }
+    }
+
+    return max;
+}
+
+double min_element(double* vector, int len){
+
+    double min = vector[0];
+
+    for(int i = 0; i < len; i++){
+        if(vector[i] < min){
+            min = vector[i];
+        }
+    }
+
+    return min;
+}
+
+void normalize_vector(double** vector, int len){
+
+    double max_value = max_element(*vector, len);
+    double min_value = min_element(*vector, len);
+
+    for(int i = 0; i < len; i++){
+        *(*vector + i) = ( *(*vector + i) - min_value ) / (max_value - min_value);
+    }
+} 
 
 double** read_files(char* datatype) {
 	// read all txt files and return a pointer to an array with the normalized frequence vector
@@ -401,7 +434,7 @@ double** read_files(char* datatype) {
 			img_descriptor[j] = (j < ilbp_max_num) ? (double)ilbp[j] : glcm[j - ilbp_max_num];
 		}
 
-		// TODO: normalize img_descriptor
+		normalize_vector(&img_descriptor, (ilbp_max_num + 24));
 
 		*(read_data + i - 1) = img_descriptor;
 
