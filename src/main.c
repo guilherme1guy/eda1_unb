@@ -17,6 +17,10 @@ char *dataset_path;
 int img_lin = 0;
 int img_col = 0;
 
+double hits = 0;
+double false_positive = 0;
+double false_negative = 0;
+
 void exit_with_error(char* error, int code) {
 	printf("%s\n", error);
 	exit(code);
@@ -566,9 +570,41 @@ void learn(double** learn_set, double** vector, int individual_vector_size, int 
 
        *(*vector + i) /= (number_of_vectors);
     }
+}
 
-        *vector[i] /= (size);
+void test_descriptor(double* asphalt_descriptor, double* grass_descriptor, double** test_set, int is_grass){
+
+    // calculating for test set
+    for(int i = 0; i < 25; i++){
+
+        // i == descriptor from test set
+        // j == elements of descriptor
+
+        double distance_from_grass = 0;
+        double distance_from_asphalt = 0;
+
+        // get distance from descriptors
+        for(int j = 0; j < 25; j++){
+            distance_from_asphalt  += pow(asphalt_descriptor[j] - *(*(test_set + i) + j), 2);
+            distance_from_grass  += pow(grass_descriptor[j] - *(*(test_set + i) + j), 2);
+        }
+
+        distance_from_asphalt = sqrt(distance_from_asphalt);
+        distance_from_grass = sqrt(distance_from_grass);
+        
+        // 0 = asphalt, 1 = grass        
+        int test_result = (distance_from_grass < distance_from_asphalt) ? 1 : 0; 
+    
+        if(test_result == is_grass){
+            hits++;
+        }else{
+            
+            // false positive == asphalt identified as grass
+            // false negative == grass identified as asphalt
+            is_grass ? false_negative++ : false_positive++;
+        }
     }
+
 }
 
 int main(int argc, char **argv) {
@@ -635,7 +671,17 @@ int main(int argc, char **argv) {
 		printf("]\n");
 	}
 
+    //test_descriptor(double* asphalt_descriptor, double* grass_descriptor, double** test_set, int is_grass)
 
+    test_descriptor(asphalt_descriptor, grass_descriptor, grass_test_set, 1);
+    test_descriptor(asphalt_descriptor, grass_descriptor, asphalt_test_set, 0);
+
+    // convert number to porcentage
+    hits = (hits * 100)/50.0;
+    false_negative = (false_negative * 100)/50.0;
+    false_positive = (false_positive *100)/50.0;
+
+    printf("Acertos: %.0lf%%\nFalso positivo: %.0lf%%\nFalso negativo: %.0lf%%\n", hits, false_positive, false_negative);
     
 
 	// free memory
