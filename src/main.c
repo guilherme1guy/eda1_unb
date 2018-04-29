@@ -8,6 +8,8 @@
 #define DATATYPE_ASPHALT "/asphalt/asphalt_"
 
 #define MAX_GRAY_LEVEL 256
+#define ILBP_MAX 512
+#define NUMBER_OF_METRICS 24
 
 int debug = 0;
 char *dataset_path;
@@ -417,7 +419,7 @@ double** read_files(char* datatype) {
 
 	for (int i = 1; i <= 50; i++) {
 
-		int ilbp_max_num = 512;
+		int ilbp_max_num = ILBP_MAX;
 
 		char *filename = get_filename(path, i, ".txt");
 
@@ -427,7 +429,7 @@ double** read_files(char* datatype) {
 
 		double *glcm = calculate_GLCM_for_matrix(mat, img_lin, img_col, MAX_GRAY_LEVEL); // return vec[24]
 
-		double *img_descriptor = calloc((ilbp_max_num + 24), sizeof(double)); // concatenate ilbp and glcm
+		double *img_descriptor = calloc((ilbp_max_num + NUMBER_OF_METRICS), sizeof(double)); // concatenate ilbp and glcm
 
 		for (int j = 0; j < (ilbp_max_num + 24); j++) {
 
@@ -555,8 +557,18 @@ void get_image_descriptor_set_for_data_type(char* datatype, int set_size, double
 		exit_with_error("\nMemory allocation error", 1);
 }
 
-int main(int argc, char **argv)
-{
+void learn(double** learn_set, double** vector, int size ){
+    
+    for(int i = 0; i < size; i++){
+        for(int j = 0; j < size; j++){
+            *vector[i] += *learn_set[j];
+        }
+
+        *vector[i] /= (size);
+    }
+}
+
+int main(int argc, char **argv) {
 	// argv[0] = (str) program executable
 	// argv[1] = (str) dataset path
 	// argv[2] = (int) debug mode
@@ -579,19 +591,33 @@ int main(int argc, char **argv)
 	double** grass_learn_set;
 	double** grass_test_set;
 
+    double* grass_descriptor;
+
 	get_image_descriptor_set_for_data_type(DATATYPE_GRASS, 50, &grass, &grass_learn_set, &grass_test_set);
 
 	// separate full_set into a learn_set and a test set
 	get_random_set(&grass, 50, &grass_learn_set, &grass_test_set);
 
+    grass_descriptor = calloc(ILBP_MAX + NUMBER_OF_METRICS, sizeof(double));
+
+    learn(grass_learn_set, &grass_descriptor, (ILBP_MAX + NUMBER_OF_METRICS));
+
 	double** asphalt;
 	double** asphalt_learn_set;
 	double** asphalt_test_set;
+    
+    double* asphalt_descriptor;
+
 	get_image_descriptor_set_for_data_type(DATATYPE_ASPHALT, 50, &asphalt, &asphalt_learn_set, &asphalt_test_set);
 
 	get_random_set(&asphalt, 50, &asphalt_learn_set, &asphalt_test_set);
 
-	// TODO: proccess data
+    asphalt_descriptor = calloc(ILBP_MAX + NUMBER_OF_METRICS, sizeof(double));
+
+    learn(asphalt_learn_set, &asphalt_descriptor, (ILBP_MAX + NUMBER_OF_METRICS));
+
+
+
 
 	// free memory
 	if (debug)
