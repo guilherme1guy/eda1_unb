@@ -557,12 +557,15 @@ void get_image_descriptor_set_for_data_type(char* datatype, int set_size, double
 		exit_with_error("\nMemory allocation error", 1);
 }
 
-void learn(double** learn_set, double** vector, int size ){
+void learn(double** learn_set, double** vector, int individual_vector_size, int number_of_vectors){
     
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < size; j++){
-            *vector[i] += *learn_set[j];
+    for(int i = 0; i < individual_vector_size; i++){
+        for(int j = 0; j < number_of_vectors; j++){
+            *(*vector + i) += *(*(learn_set + j) + i);
         }
+
+       *(*vector + i) /= (number_of_vectors);
+    }
 
         *vector[i] /= (size);
     }
@@ -600,7 +603,15 @@ int main(int argc, char **argv) {
 
     grass_descriptor = calloc(ILBP_MAX + NUMBER_OF_METRICS, sizeof(double));
 
-    learn(grass_learn_set, &grass_descriptor, (ILBP_MAX + NUMBER_OF_METRICS));
+    learn(grass_learn_set, &grass_descriptor, (ILBP_MAX + NUMBER_OF_METRICS), 25);
+
+    if (debug) {
+		printf("Grass descriptor:\n[");
+		for (int i = 0; i < ILBP_MAX + NUMBER_OF_METRICS; i++) {
+			printf(" %.5lf ", grass_descriptor[i]);
+		}
+		printf("]\n");
+	}
 
 	double** asphalt;
 	double** asphalt_learn_set;
@@ -614,10 +625,18 @@ int main(int argc, char **argv) {
 
     asphalt_descriptor = calloc(ILBP_MAX + NUMBER_OF_METRICS, sizeof(double));
 
-    learn(asphalt_learn_set, &asphalt_descriptor, (ILBP_MAX + NUMBER_OF_METRICS));
+    learn(asphalt_learn_set, &asphalt_descriptor, (ILBP_MAX + NUMBER_OF_METRICS), 25);
+
+    if (debug) {
+		printf("Asphalt descriptor:\n[");
+		for (int i = 0; i < ILBP_MAX + NUMBER_OF_METRICS; i++) {
+			printf(" %.5lf ", asphalt_descriptor[i]);
+		}
+		printf("]\n");
+	}
 
 
-
+    
 
 	// free memory
 	if (debug)
@@ -628,6 +647,7 @@ int main(int argc, char **argv) {
 	// clean just the set reference
 	free(grass_test_set);
 	free(grass_learn_set);
+    free(grass_descriptor);
 
 	if (debug)
 		printf("\n===Freeing asphalt sets memory===\nasphalt = %p\nasphalt_learn = %p\nasphalt_test = %p\n", asphalt, asphalt_learn_set, asphalt_test_set);
@@ -635,6 +655,7 @@ int main(int argc, char **argv) {
 	free_data(&asphalt);
 	free(asphalt_learn_set);
 	free(asphalt_test_set);
+    free(asphalt_descriptor);
 
 	if (debug) {
 		puts("\nEND");
