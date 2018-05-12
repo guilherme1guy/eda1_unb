@@ -1,2 +1,11 @@
-# EDA1_UnB_1_2018
-This repository has the purpose of elaborating projects for discipline of data structure of the University of Brasília
+# Algorithms and Data Structures (EDA1) - UnB
+
+## Description
+
+This repository contains the projects developed for the discipline of Algorithms and Data Structures 1 (Estrutura de Dados e Algoritmos  - EDA1, in portuguese) studied during the course of Software Engineering at the University of Brasília (UnB).
+
+## Projects
+
+1. (I lost the files);
+2. ILBP and GLCM;
+3. Linked Lists and Insertion Sort;
