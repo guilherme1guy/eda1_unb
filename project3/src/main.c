@@ -60,6 +60,14 @@ void clear_screen() {
 	puts("\x1B[2J");
 }
 
+void clear_input(){
+
+	char c;
+	while ((c = getchar()) != '\n' && c != EOF)
+		/* discard */;
+
+}
+
 void print_header() {
 
 	puts("\n\n====================================\nAGENDA\n====================================\n\n");
@@ -72,15 +80,12 @@ int get_choice(int min, int max) {
 
 	do {
 
-		printf("Escolha uma opcao (%d ate %d): ", min, max);
+		printf("\nEscolha uma opcao (%d ate %d): ", min, max);
 		scanf("%d", &choice);
 
-		char c;
-		while ((c = getchar()) != '\n' && c != EOF)
-			/* discard */;
+		clear_input();		
 
-
-	} while (choice > max && choice < min);
+	} while (choice > max || choice < min);
 
 	return choice;
 }
@@ -437,6 +442,8 @@ Contact *new_register(Contact *list) {
 		puts("\nDigite o nome: ");
 		scanf("%100[^\n]", name);
 
+		clear_input();
+
 		if (valid_name(name)) {
 
 			break;
@@ -460,6 +467,8 @@ Contact *new_register(Contact *list) {
 
 		puts("\nDigite o telefone: ");
 		scanf("%s", telephone);
+
+		clear_input();
 
 		if (valid_telephone(telephone)) {
 
@@ -486,6 +495,8 @@ Contact *new_register(Contact *list) {
 		puts("\nDigite o endereco: ");
 		scanf("%100[^\n]", address);
 
+		clear_input();
+
 		if (valid_address(address)) {
 
 			break;
@@ -499,6 +510,7 @@ Contact *new_register(Contact *list) {
 	unsigned int cep;
 	puts("\nDigite o cep: ");
 	scanf("%d", &cep);
+	clear_input();
 
 
 	char *birthday = (char *)malloc(11 * sizeof(char));
@@ -514,6 +526,9 @@ Contact *new_register(Contact *list) {
 
 		puts("\nDigite o aniversario (DD/MM/AAAA): ");
 		scanf("%s", birthday);
+
+		clear_input();
+
 
 		if (valid_birthday(birthday)) {
 
@@ -706,13 +721,9 @@ int main(int argc, char **argv) {
 
 	// main menu loop
 	int run = 1;
-	int clean = 1;
 	while (run) {
 
-		if (clean) {
-			clean = 0;
-			clear_screen();
-		}
+		clear_screen();
 
 		print_header();
 
@@ -724,7 +735,6 @@ int main(int argc, char **argv) {
 		if (choice == 1) {
 
 			contact_list = new_register(contact_list);
-			clean = 1;
 
 		}
 		else if (choice == 2) {
@@ -732,6 +742,8 @@ int main(int argc, char **argv) {
 		}
 		else if (choice == 3) {
 			print_contact_info(contact_list);
+		
+			clear_input();
 		}
 		else if (choice == 4) {
 
@@ -745,6 +757,9 @@ int main(int argc, char **argv) {
 			free_list(contact_list);
 
 		}
+
+		puts("\n\n---\nAperte enter para continuar...");
+		getchar();
 
 	}
 
