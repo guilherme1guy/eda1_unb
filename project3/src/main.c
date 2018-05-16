@@ -621,7 +621,7 @@ void save_list_to_file(Contact *list) {
 
 void print_contact_info(Contact *list) {
 
-	char* search_name = malloc(101 * sizeof(char));
+	char *search_name = (char *) malloc(101 * sizeof(char));
 
 	puts("\nDigite o nome EXATO do contato a ser pesquisado: ");
 	scanf("%100[^\n]", search_name);
@@ -651,7 +651,7 @@ void print_contact_info(Contact *list) {
 
 Contact *remove_contact(Contact *list) {
 
-	char* search_name = malloc(101 * sizeof(char));
+	char* search_name = (char *) malloc(101 * sizeof(char));
 
 	puts("\nDigite o nome EXATO do contato a ser removido: ");
 	scanf("%100[^\n]", search_name);
