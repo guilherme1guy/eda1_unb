@@ -351,6 +351,20 @@ char *string_tolower(char *string) {
 
 }
 
+int string_compare(char *str1, char *str2){
+
+	char *lower_str1 = string_tolower(str1);
+	char *lower_str2 = string_tolower(str2);
+
+	int result = strcmp(lower_str1, lower_str2);
+
+	free(lower_str1);
+	free(lower_str2);
+
+	return result;
+
+}
+
 Contact *insertion_sort(Contact *list) {
 
 	if (list == NULL || list->next == NULL) {
@@ -370,7 +384,7 @@ Contact *insertion_sort(Contact *list) {
 		list = list->next;
 
 		// if this is the first element or is lower than the first
-		if (sorted_root == NULL || strcmp(string_tolower(current->name), string_tolower(sorted_root->name)) < 0) {
+		if (sorted_root == NULL || string_compare(current->name,sorted_root->name) < 0) {
 
 			// set current as new root
 			current->next = sorted_root;
@@ -393,7 +407,7 @@ Contact *insertion_sort(Contact *list) {
 			while (test_element != NULL) {
 
 				// if test element is the last item in list or the current element is lower than the next
-				if (test_element->next == NULL || strcmp(string_tolower(current->name), string_tolower(test_element->next->name)) < 0) {
+				if (test_element->next == NULL || string_compare(current->name, test_element->next->name) < 0) {
 
 					// insert current element into the list
 
