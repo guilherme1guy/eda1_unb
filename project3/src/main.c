@@ -623,7 +623,7 @@ void print_contact_info(Contact *list) {
 
 	char *search_name = (char *) malloc(101 * sizeof(char));
 
-	puts("\nDigite o nome EXATO do contato a ser pesquisado: ");
+	puts("\nDigite o nome do contato a ser pesquisado: ");
 	scanf("%100[^\n]", search_name);
 
 	printf("\nProcurando por %s...\n", search_name);
@@ -632,13 +632,11 @@ void print_contact_info(Contact *list) {
 
 	while (current != NULL) {
 
-		if (strcmp(current->name, search_name) == 0) {
+		if (strstr(current->name, search_name) != NULL) {
 
-			printf("\n...\n\nEncontrado: %s - Informacoes do contato:\n", search_name);
+			printf("\n...\n\nEncontrado: ''%s'' em:\n", search_name);
 
 			print_contact(current);
-
-			break;
 		}
 
 		current = current->next;
@@ -653,61 +651,81 @@ Contact *remove_contact(Contact *list) {
 
 	char* search_name = (char *) malloc(101 * sizeof(char));
 
-	puts("\nDigite o nome EXATO do contato a ser removido: ");
+	puts("\nDigite o nome do contato a ser removido: ");
 	scanf("%100[^\n]", search_name);
 
 	printf("\nProcurando por %s...\n", search_name);
 
 	Contact *current = list;
+	Contact *iterator = list;
 
-	while (current != NULL) {
+	Contact *return_list = NULL;
 
-		if (strcmp(current->name, search_name) == 0) {
+	int found = 0;
 
-			printf("\n...\n\nEncontrado %s  - Informacoes do contato:\n", search_name);
+	while (iterator != NULL) {
+
+		current = iterator;
+		iterator = iterator->next;
+
+		if (strstr(current->name, search_name) != NULL) {
+
+			printf("\n...\n\nEncontrado ''%s'' em:\n", search_name);
 
 			print_contact(current);
 
-			Contact *return_list = NULL;
-
-
+			// if current is not the list root
 			if (current->previous != NULL) {
 
+				// remove connection from previous and point it to
+				// current next 
 				current->previous->next = current->next;
 
+				// if current have a next, set the next previous as current 
+				// previous  
 				if (current->next != NULL) {
 					current->next->previous = current->previous;
 				}
 
+				// since we havent changed the root, we set the list origin to
+				// be returned
 				return_list = list;
 
-			}
-			else {
+			} else {
 
+				// if we are the root
+
+				// set the new root as the next item
 				Contact *new_root = current->next;
 
+				// remove connection to current object
+				if(new_root != NULL) { // only if list is still populated
+					new_root->previous = NULL;
+				}
+				// prepare the new list (sorted) without the current element
 				return_list = insertion_sort(new_root);
 			}
 
+			// clean the removed element connections
 			current->next = NULL;
 			current->previous = NULL;
 
+			// free memory
 			free_list(current);
+
 
 			puts("\n---\nContato removido. Nao esqueca de salvar as alteracoes.\n---\n");
 
 
-			return return_list;
+			found = 1;
 		}
-
-		current = current->next;
 	}
 
-	puts("\nNao encontrado\n");
+	if(found == 0) {
+		puts("\nNao encontrado\n");
+	}
 
-
-
-	return list;
+	return found ? return_list : list;
 }
 
 int main(int argc, char **argv) {
