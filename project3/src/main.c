@@ -11,7 +11,7 @@ typedef struct Element {
 	char *name;
 	char *telephone; // format: XXXXX-XXXX
 	char *address;
-	unsigned int cep;
+	int cep;
 	char *birthday; // format DD/MM/YYYY
 
 	struct Element *next;
@@ -27,7 +27,7 @@ Contact *create_list() {
 	return NULL;
 }
 
-Contact *create_item(char *name, char *telephone, char *address, unsigned int cep, char *birthday) {
+Contact *create_item(char *name, char *telephone, char *address, int cep, char *birthday) {
 
 	Contact *contact = (Contact *)malloc(sizeof(Contact));
 
@@ -300,8 +300,10 @@ Contact *get_contacts_from_file() {
 				exit(0);
 			}
 
-			unsigned int cep;
+			int cep;
 			fscanf(file, "%d\n", &cep);
+			cep = abs(cep);
+
 
 			char *birthday = read_line(file);
 
@@ -521,9 +523,11 @@ Contact *new_register(Contact *list) {
 		}
 	}
 
-	unsigned int cep;
+	int cep;
 	puts("\nDigite o cep: ");
 	scanf("%d", &cep);
+	cep = abs(cep);
+
 	clear_input();
 
 
@@ -742,7 +746,7 @@ int main(int argc, char **argv) {
 
 		// convert debug var from char to int
 		char *c = argv[1];
-		debug = (int)strtol(c, NULL, 10);
+		debug = (int) strtol(c, NULL, 10);
 
 		if (debug) {
 			printf("Debug: %d\n", debug);
