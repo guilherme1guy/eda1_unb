@@ -654,6 +654,8 @@ Contact *remove_contact(Contact *list) {
 	puts("\nDigite o nome do contato a ser removido: ");
 	scanf("%100[^\n]", search_name);
 
+	clear_input();
+
 	printf("\nProcurando por %s...\n", search_name);
 
 	Contact *current = list;
