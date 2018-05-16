@@ -630,6 +630,8 @@ void print_contact_info(Contact *list) {
 
 	Contact *current = list;
 
+	int found = 0;
+
 	while (current != NULL) {
 
 		if (strstr(current->name, search_name) != NULL) {
@@ -637,13 +639,14 @@ void print_contact_info(Contact *list) {
 			printf("\n...\n\nEncontrado: ''%s'' em:\n", search_name);
 
 			print_contact(current);
+		
+			found = 1;
 		}
 
 		current = current->next;
 	}
 
-	puts("\nNao encontrado\n");
-
+	if (found == 0)	puts("\nNao encontrado\n");
 
 }
 
