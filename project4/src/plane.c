@@ -30,14 +30,12 @@ void print_plane_name(Plane p){
 
 int get_random_fuel(){
 
-    srand(time(NULL));
     return rand() % 13; //0 to 12
 
 }
 
 char get_random_type(){
     
-    srand(time(NULL));
     int random_num = rand() % 2; //0 to 1
 
     return random_num ? 'A' : 'D';
@@ -60,8 +58,9 @@ Plane *create_plane(char *name, char type, int fuel){
     }
 
     strcpy(p->name, name);
+    
     p->type = type;
-    p->fuel = fuel;
+    p->fuel = (type == 'A') ? fuel : -1;
 
     return p;
 }

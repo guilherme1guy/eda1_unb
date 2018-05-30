@@ -3,7 +3,7 @@
 
 
 typedef struct plane{
-    int fuel;
+    int fuel; // -1 is for departure, 0-12 for arrival
     char type;
     char name[10];
 } Plane;
