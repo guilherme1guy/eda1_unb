@@ -56,6 +56,12 @@ dkms.conf
 *.project
 *.workspace
 .codelite/
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.filters
+*.user
 
 # Project
 [Bb]uild/
