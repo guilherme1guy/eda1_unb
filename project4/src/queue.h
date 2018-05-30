@@ -15,6 +15,7 @@ typedef struct queue {
 } Queue;
 
 List *create_element(Plane *p);
+Queue *create_queue();
 
 Queue *enqueue(List *element, Queue *q);
 Queue *enqueue_start(List *element, Queue *q);
@@ -26,6 +27,7 @@ Queue *delete_from_queue(List *element, Queue *q);
 List *dequeue(Queue *q);
 
 void free_element(List *element);
+void free_queue(Queue *q);
 
 int is_empty(Queue *q);
 

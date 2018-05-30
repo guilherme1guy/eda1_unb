@@ -19,6 +19,20 @@ List *create_element(Plane *p){
     return element;
 }
 
+Queue *create_queue(){
+
+    Queue *q = (Queue *) malloc(sizeof(Queue));
+
+    if(q == NULL){
+        printf("\nMemory error - Queue");
+    }
+
+    q->start = NULL;
+    q->end = NULL;
+
+    return q;
+}
+
 Queue *enqueue(List *element, Queue *q){
     
     if (is_empty(q)) {
@@ -141,4 +155,19 @@ void free_element(List *element){
     free_plane(element->plane);
     
     free(element);
+}
+
+void free_queue(Queue *q){
+
+    List *iterator = q->end;
+
+    while(iterator->next != NULL){
+
+        List *current = iterator;
+        iterator = iterator->next;
+
+        free_element(current);
+    }
+
+    free(q);
 }
