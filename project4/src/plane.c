@@ -18,12 +18,12 @@ const char* PLANE_NAMES[] = {"VG3001",
 "KL5610", "KL5611"};
 
 
-void print_plane_name(Plane p){
+void print_plane_name(Plane *p){
 
-    if(p.type == 'A'){
-        printf("%s-%c-%d", p.name, p.type, p.fuel);
+    if(p->type == 'A'){
+        printf("%s-%c-%d", p->name, p->type, p->fuel);
     }else{
-        printf("%s-%c", p.name, p.type);
+        printf("%s-%c", p->name, p->type);
     }
 }
 
@@ -39,16 +39,18 @@ char get_random_type(){
     int random_num = rand() % 2; //0 to 1
 
     return random_num ? 'A' : 'D';
-
 }
 
 void remove_fuel(Plane *p){
-    
-    p->fuel -= 1;
 
+    if (p->fuel >= 0 && p->type != 'D'){
+     
+        p->fuel -= 1;
+    
+    }
 }
 
-Plane *create_plane(char *name, char type, int fuel){
+Plane *create_plane(const char *name, char type, int fuel){
 
     Plane *p = (Plane *) malloc(sizeof(Plane));
 
@@ -60,7 +62,7 @@ Plane *create_plane(char *name, char type, int fuel){
     strcpy(p->name, name);
     
     p->type = type;
-    p->fuel = (type == 'A') ? fuel : -1;
+    p->fuel = (type == 'A') ? fuel : 12;
 
     return p;
 }
