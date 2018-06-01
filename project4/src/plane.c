@@ -18,13 +18,23 @@ const char* PLANE_NAMES[] = {"VG3001",
 "KL5610", "KL5611"};
 
 
-void print_plane_name(Plane *p){
+char *get_plane_name(Plane *p){
+        
+    char *str = (char *) calloc(24, sizeof(char));
 
-    if(p->type == 'A'){
-        printf("%s-%c-%d", p->name, p->type, p->fuel);
-    }else{
-        printf("%s-%c", p->name, p->type);
+    
+    if(str == NULL){
+        puts("\nMemory error - Time string");
+        exit(1);
     }
+	
+    if(p->type == 'A'){
+        sprintf(str, "%s-%c-%d", p->name, p->type, p->fuel < 0 ? 0 : p->fuel);
+    }else{
+        sprintf(str, "%s-%c", p->name, p->type);
+    }
+    
+    return str;
 }
 
 

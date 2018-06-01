@@ -11,6 +11,9 @@ typedef struct plane{
 extern const char* PLANE_NAMES[];
 
 void print_plane_name(Plane *p);
+char *get_plane_name(Plane *p);
+
+void plane_action(Plane *p, int lane, int global_time);
 
 int get_random_fuel();
 char get_random_type();
