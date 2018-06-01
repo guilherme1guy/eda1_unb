@@ -3,10 +3,20 @@
 
 #include "plane.h"
 #include "queue.h"
+#include "airport.h"
+
+extern const int initial_time[2];
+extern const int timestep_size;
 
 void decrease_all_fuel(Queue *q);
-char *get_time_from_start(int *initial_time, int timesteps, int timestep_size);
+char *get_time_from_start(int timesteps);
+
+int has_emergency(Queue *q);
 
 void plane_fall(List *element, Queue *q);
+
+void land_plane(Airport *a, Plane *p, int lane, int global_time);
+
+void takeoff_plane(Airport *a, Plane *p, int lane, int global_time);
 
 #endif /* UTILS_H */
