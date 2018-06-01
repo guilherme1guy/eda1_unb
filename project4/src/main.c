@@ -34,13 +34,14 @@ void update(Queue *plane_queue, Airport *airport) {
 	int tries = 0;
 	for(int i = 0; i < 3; i++) {
 
-		List *element = dequeue(plane_queue);
 
-		if (element == NULL) {
+		if (is_empty(plane_queue)) {
 			break;
 		}
 
-		if (is_empty(plane_queue)) {
+		List *element = dequeue(plane_queue);
+
+		if (element == NULL) {
 			break;
 		}
 
