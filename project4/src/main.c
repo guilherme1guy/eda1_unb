@@ -137,7 +137,7 @@ int main() {
 		update(plane_queue, airport);
 	}
 
-	printf("\n\n=========\nResumo:\n\tCriados: %d\n\tPousos: %d\n\tDecolagens: %d\n\tQuedas: %d\n\t", planes_made, planes_landed, planes_takeoff, planes_fallen);
+	printf("\n\n=========\nResumo:\n\tCriados: %d\n\tPousos: %d\n\tDecolagens: %d\n\tQuedas: %d\n\tTotal: %d\n\t", planes_made, planes_landed, planes_takeoff, planes_fallen, (planes_landed + planes_takeoff + planes_fallen));
 
 	free_queue(plane_queue);
 	free_airport(airport);
