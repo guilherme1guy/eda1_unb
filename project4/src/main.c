@@ -110,9 +110,21 @@ int main() {
 	Queue *plane_queue = create_queue();
 	Airport *airport = start_airport();
 
-	for (int i = 0; i < 64; i++) {
+	int takeoffs = 10 + (rand() % (32 - 10));
+	int arrivals = 10 + (rand() % (32 - 10));
+	int plane_number = takeoffs + arrivals;; 
 	
-		Plane *p = create_plane(PLANE_NAMES[i], get_random_type(), get_random_fuel());
+
+	for (int i = 0; i < plane_number; i++) {
+
+		char type = get_random_type();
+
+		takeoffs <= 0 ? type = 'A' : 0;
+		arrivals <= 0 ? type = 'D' : 0;
+
+		type == 'D' ? takeoffs-- : arrivals--;
+
+		Plane *p = create_plane(PLANE_NAMES[i], type, get_random_fuel());
 
 		List *element = create_element(p);
 
