@@ -17,12 +17,12 @@ typedef struct queue {
 List *create_element(Plane *p);
 Queue *create_queue();
 
-Queue *enqueue(List *element, Queue *q);
-Queue *enqueue_start(List *element, Queue *q);
-Queue *move_to_start(List *element, Queue *q);
+void enqueue(List *element, Queue *q);
+void enqueue_start(List *element, Queue *q);
+void move_to_start(List *element, Queue *q);
 
 List *find_previous_element(List *element, Queue *q);
-Queue *delete_from_queue(List *element, Queue *q);
+void delete_from_queue(List *element, Queue *q);
 
 List *dequeue(Queue *q);
 

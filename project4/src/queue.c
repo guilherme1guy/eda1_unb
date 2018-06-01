@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 List *create_element(Plane *p){
 
     List *element = (List *) malloc(sizeof(List));
@@ -33,29 +34,32 @@ Queue *create_queue(){
     return q;
 }
 
-Queue *enqueue(List *element, Queue *q){
+void  enqueue(List *element, Queue *q){
     
     if (is_empty(q)) {
-        
+
         q->start = element;
         q->end = element;
-    
+
     }else{
-        
+
+		if (q->start == q->end) {
+		} else {
+
+		}
         element->next = q->end;
         q->end = element;
 
     }
-
-    return q;
 }
 
-Queue *enqueue_start(List *element, Queue *q){
+void enqueue_start(List *element, Queue *q){
     
+    element->next = NULL;
+
     if (is_empty(q)) {
         
-        q->start = element;
-        q->end = element;
+        enqueue(element, q);
     
     }else{
         
@@ -64,7 +68,6 @@ Queue *enqueue_start(List *element, Queue *q){
 
     }
 
-    return q;
 }
 
 List *dequeue(Queue *q){
@@ -77,17 +80,19 @@ List *dequeue(Queue *q){
 
     List *element = q->start;
 
-    List *new_start = q->end;
+    List *new_start = find_previous_element(element, q);
 
-    if(new_start->next != NULL){
+	if (new_start != NULL) {
+		
+		new_start->next = NULL;
+	
+	} else {
+	
+		q->end = NULL;
 
-        while(new_start->next != element){
-            new_start = new_start->next;
-        }
+	}
     
-    }
     
-    new_start->next = NULL;
     q->start = new_start;
 
     return element;
@@ -95,24 +100,26 @@ List *dequeue(Queue *q){
 
 int is_empty(Queue *q){
 
-    return (q->end == NULL || q->start == NULL);
+    return (q->end == NULL && q->start == NULL);
 }
 
 List *find_previous_element(List *element, Queue *q){
     
-    List *previous = NULL;
+    List *itr = q->end;
 
-    List *iterator = q->end;
-    while (iterator != NULL && iterator->next != element){
-        iterator = iterator->next;
+    while(itr->next != element){
+        
+		if (itr == NULL || itr->next == NULL) {
+			return NULL;
+		}
+		
+		itr = itr->next;
     }
 
-    previous = iterator;
-
-    return previous;
+    return itr;
 }
 
-Queue *move_to_start(List *element, Queue *q){
+void  move_to_start(List *element, Queue *q){
 
     List *previous;
     previous = find_previous_element(element, q);
@@ -125,10 +132,10 @@ Queue *move_to_start(List *element, Queue *q){
 
     element->next = NULL;
 
-    return enqueue_start(element, q);
+    enqueue_start(element, q);
 }
 
-Queue *delete_from_queue(List *element, Queue *q){
+void  delete_from_queue(List *element, Queue *q){
 
     List *previous;
     previous = find_previous_element(element, q);
@@ -147,7 +154,6 @@ Queue *delete_from_queue(List *element, Queue *q){
 
     free_element(element);
 
-    return q;
 }
 
 void free_element(List *element){
@@ -155,13 +161,14 @@ void free_element(List *element){
     free_plane(element->plane);
     
     free(element);
+
 }
 
 void free_queue(Queue *q){
 
     List *iterator = q->end;
 
-    while(iterator->next != NULL){
+    while(iterator != NULL){
 
         List *current = iterator;
         iterator = iterator->next;
