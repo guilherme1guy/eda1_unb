@@ -91,7 +91,7 @@ char *get_time_from_start(int timesteps){
         minutes -= 60;
     }
 
-    char *str = (char *) calloc(10, sizeof(char));
+    char *str = (char *) calloc(32, sizeof(char));
 
     
     if(str == NULL){

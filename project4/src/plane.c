@@ -20,7 +20,7 @@ const char* PLANE_NAMES[] = {"VG3001",
 
 char *get_plane_name(Plane *p){
         
-    char *str = (char *) calloc(24, sizeof(char));
+    char *str = (char *) calloc(32, sizeof(char));
 
     
     if(str == NULL){
@@ -29,7 +29,7 @@ char *get_plane_name(Plane *p){
     }
 	
     if(p->type == 'A'){
-        sprintf(str, "%s-%c-%d", p->name, p->type, p->fuel < 0 ? 0 : p->fuel);
+        sprintf(str, "%s-%c-%02d", p->name, p->type, p->fuel < 0 ? 0 : p->fuel);
     }else{
         sprintf(str, "%s-%c", p->name, p->type);
     }
