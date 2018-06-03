@@ -63,11 +63,31 @@ void enqueue_start(List *element, Queue *q){
     
     }else{
         
+        if(q->start == NULL){
+            recover_start(q);
+        }
+
         q->start->next = element;
         q->start = element;
 
     }
 
+}
+
+void recover_start(Queue *q){
+    
+    if (q->start == NULL){
+		
+        List *itr = q->end;
+
+        while(itr->next != NULL){
+            
+            itr = itr->next;
+        }
+
+        q->start = itr;
+
+	}
 }
 
 List *dequeue(Queue *q){
@@ -76,7 +96,11 @@ List *dequeue(Queue *q){
 
         return NULL;
 
-    }
+    }else if (q->start == NULL){
+		
+        recover_start(q);
+       
+	}
 
     List *element = q->start;
 
@@ -158,7 +182,12 @@ void  delete_from_queue(List *element, Queue *q){
 
 void free_element(List *element){
 
-    free_plane(element->plane);
+    Plane *p = element->plane;
+
+    element->plane = NULL;
+    element->next = NULL;
+
+    free_plane(p);
     
     free(element);
 
@@ -175,6 +204,9 @@ void free_queue(Queue *q){
 
         free_element(current);
     }
+
+    q->start = NULL;
+    q->end = NULL;
 
     free(q);
 }

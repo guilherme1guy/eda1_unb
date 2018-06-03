@@ -24,6 +24,8 @@ void move_to_start(List *element, Queue *q);
 List *find_previous_element(List *element, Queue *q);
 void delete_from_queue(List *element, Queue *q);
 
+void recover_start(Queue *q);
+
 List *dequeue(Queue *q);
 
 void free_element(List *element);
