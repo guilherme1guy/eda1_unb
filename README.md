@@ -9,3 +9,4 @@ This repository contains the projects developed for the discipline of Algorithms
 1. (I lost the files);
 2. ILBP and GLCM;
 3. Linked Lists and Insertion Sort;
+4. Queues/Stacks and Linked Lists;
