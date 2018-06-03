@@ -31,50 +31,57 @@ void update(Queue *plane_queue, Airport *airport) {
 		decrease_all_fuel(plane_queue);
 	}
 
-	List *element = dequeue(plane_queue);
-
-	if (element == NULL) {
-		return;
-	}
-
-	Plane *p = element->plane;
-
-	int changed = 0;
 
 	for(int i = 0; i < 3; i++) {
+
+
+		List *element = dequeue(plane_queue);
+
+		if (element == NULL) {
+			return;
+		}
+
+		Plane *p = element->plane;
+
+		int changed = 0;
 
 		if (p->type == 'A' && can_land(airport, i, emergency_status)){
 			land_plane(airport, p, i, global_time);
 			planes_landed++;
 			changed = 1;
-			break;
 		}
 
 		if (p->type == 'D' && can_takeoff(airport, i, emergency_status)){
 			takeoff_plane(airport, p, i, global_time);
 			planes_takeoff++;
 			changed = 1;
-			break;
+		}
+
+
+		if (changed) {
+			free_element(element);
+		}
+		else {
+
+			if (p->fuel == 0) {
+
+				enqueue_start(element, plane_queue);
+
+			}
+			else {
+
+				enqueue(element, plane_queue);
+
+			}
 		}
 	}
 
 
-	if(changed){
-		free_element(element);
-	}else{
-		
-		if(p->fuel == 0){
-		
-			enqueue_start(element, plane_queue);
-		
-		}else{
-		
-			enqueue(element, plane_queue);	
-		
-		}
-	}
 
 	List *iterator = plane_queue->end;
+
+	char *moved_names[64];
+	int moves = 0;
 
 	while (iterator != NULL && !is_empty(plane_queue)) {		
 		List *current = iterator;
@@ -85,7 +92,36 @@ void update(Queue *plane_queue, Airport *airport) {
 			
 			plane_fall(current, plane_queue);
 			planes_fallen++;
+
+		} else if (current->plane->fuel == 0 && current != plane_queue->start) {
+
+			int contains = 0;
+			for (int i = 0; i < moves; i++) {
+				if (strcmp(moved_names[i], current->plane->name) == 0) {
+					contains = 1;
+					break;
+				}
+			}
+
+			if (!contains) {
+
+				moved_names[moves] = (char *) calloc(strlen(current->plane->name) + 1, sizeof(char));
+
+				if (moved_names[moves] == NULL) {
+					printf("Allocation error - PLANE NAMES");
+					exit(1);
+				}
+
+				strcpy(moved_names[moves], current->plane->name);
+				moves++;
+
+				move_to_start(current, plane_queue);
+			}
 		}
+	}
+
+	for (int i = moves - 1; i >= 0; i--) {
+		free(moved_names[i]);
 	}
 
 	global_time++;
