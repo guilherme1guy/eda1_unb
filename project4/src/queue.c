@@ -26,7 +26,8 @@ Queue *create_queue(){
 
     if(q == NULL){
         printf("\nMemory error - Queue");
-    }
+		exit(1);
+	}
 
     q->start = NULL;
     q->end = NULL;
@@ -140,6 +141,10 @@ List *find_previous_element(List *element, Queue *q){
 
 void  move_to_start(List *element, Queue *q){
 
+	if (element == q->start) {
+		return;
+	}
+
     List *previous;
     previous = find_previous_element(element, q);
 
@@ -147,7 +152,11 @@ void  move_to_start(List *element, Queue *q){
         
         previous->next = element->next;
             
-    }
+    } else {
+
+		q->end = element->next;
+
+	}
 
     element->next = NULL;
 
