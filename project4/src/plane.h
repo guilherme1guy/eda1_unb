@@ -5,7 +5,7 @@
 typedef struct plane{
     int fuel;
     char type;
-    char name[10];
+    char *name;
 } Plane;
 
 extern const char* PLANE_NAMES[];

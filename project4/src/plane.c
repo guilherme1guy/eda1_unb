@@ -69,6 +69,13 @@ Plane *create_plane(const char *name, char type, int fuel){
         exit(1);
     }
 
+    p->name = (char *) calloc(strlen(name) + 6, sizeof(char));
+    
+    if (p->name == NULL){
+        printf("\nMemory error - Plane Name");
+        exit(1);
+    }
+
     strcpy(p->name, name);
     
     p->type = type;
@@ -79,6 +86,8 @@ Plane *create_plane(const char *name, char type, int fuel){
 
 void free_plane(Plane *p){
     
+    free(p->name);
+
     free(p);
     
 }
