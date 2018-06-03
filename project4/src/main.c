@@ -31,63 +31,52 @@ void update(Queue *plane_queue, Airport *airport) {
 		decrease_all_fuel(plane_queue);
 	}
 
-	int tries = 0;
+	List *element = dequeue(plane_queue);
+
+	if (element == NULL) {
+		return;
+	}
+
+	Plane *p = element->plane;
+
+	int changed = 0;
+
 	for(int i = 0; i < 3; i++) {
-
-
-		if (is_empty(plane_queue)) {
-			break;
-		}
-
-		List *element = dequeue(plane_queue);
-
-		if (element == NULL) {
-			break;
-		}
-
-		Plane *p = element->plane;
-
-		int changed = 0;
 
 		if (p->type == 'A' && can_land(airport, i, emergency_status)){
 			land_plane(airport, p, i, global_time);
 			planes_landed++;
 			changed = 1;
+			break;
 		}
 
 		if (p->type == 'D' && can_takeoff(airport, i, emergency_status)){
 			takeoff_plane(airport, p, i, global_time);
 			planes_takeoff++;
 			changed = 1;
+			break;
 		}
+	}
 
-		if(changed){
-			free_element(element);
+
+	if(changed){
+		free_element(element);
+	}else{
+		
+		if(p->fuel == 0){
+		
+			enqueue_start(element, plane_queue);
+		
 		}else{
-			
-			if(p->fuel == 0){
-			
-				enqueue_start(element, plane_queue);
-			
-			}else{
-			
-				enqueue(element, plane_queue);	
-			
-			}
-			
-			i--;
-			tries++;
-
-			if(tries == 3){
-				break;
-			}
-				
+		
+			enqueue(element, plane_queue);	
+		
 		}
 	}
 
 	List *iterator = plane_queue->end;
 
-	while (iterator != NULL) {
+	while (iterator != NULL && !is_empty(plane_queue)) {		
 		List *current = iterator;
 
 		iterator = iterator->next;
@@ -105,7 +94,8 @@ void update(Queue *plane_queue, Airport *airport) {
 
 int main() {
 	
-	srand(time(NULL));
+	unsigned int now = time(NULL);
+	srand(now);
 
 	Queue *plane_queue = create_queue();
 	Airport *airport = start_airport();
@@ -137,7 +127,7 @@ int main() {
 		update(plane_queue, airport);
 	}
 
-	printf("\n\n=========\nResumo:\n\tCriados: %d\n\tPousos: %d\n\tDecolagens: %d\n\tQuedas: %d\n\tTotal: %d\n\t", planes_made, planes_landed, planes_takeoff, planes_fallen, (planes_landed + planes_takeoff + planes_fallen));
+	printf("\n\n=========\nResumo:\n\tCriados: %d\n\tPousos: %d\n\tDecolagens: %d\n\tQuedas: %d\n\tTotal: %d\n\n", planes_made, planes_landed, planes_takeoff, planes_fallen, (planes_landed + planes_takeoff + planes_fallen));
 
 	free_queue(plane_queue);
 	free_airport(airport);
