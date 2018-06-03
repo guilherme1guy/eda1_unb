@@ -17,6 +17,7 @@ const char* PLANE_NAMES[] = {"VG3001",
 "TT1020", "AZ1098", "BA2312", "VG3030", "BA2304", "KL5609",
 "KL5610", "KL5611"};
 
+int names_taken[64] = {0};
 
 char *get_plane_name(Plane *p){
         
@@ -37,6 +38,22 @@ char *get_plane_name(Plane *p){
     }
     
     return str;
+}
+
+const char *get_random_plane_name(){
+
+   int i;
+      
+    do{
+            
+        i = rand() % 64;
+
+    }while (names_taken[i] != 0);
+
+    names_taken[i] = 1;
+  
+    return PLANE_NAMES[i];    
+
 }
 
 

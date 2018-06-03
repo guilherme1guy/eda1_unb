@@ -114,7 +114,7 @@ int main() {
 
 		type == 'D' ? takeoffs-- : arrivals--;
 
-		Plane *p = create_plane(PLANE_NAMES[i], type, get_random_fuel());
+		Plane *p = create_plane(get_random_plane_name(), type, get_random_fuel());
 
 		List *element = create_element(p);
 

@@ -12,6 +12,7 @@ extern const char* PLANE_NAMES[];
 
 void print_plane_name(Plane *p);
 char *get_plane_name(Plane *p);
+const char *get_random_plane_name();
 
 void plane_action(Plane *p, int lane, int global_time);
 
