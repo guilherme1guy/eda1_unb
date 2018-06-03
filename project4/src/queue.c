@@ -131,13 +131,8 @@ List *find_previous_element(List *element, Queue *q){
     
     List *itr = q->end;
 
-    while(itr->next != element){
-        
-		if (itr == NULL || itr->next == NULL) {
-			return NULL;
-		}
-		
-		itr = itr->next;
+    while(itr != NULL && itr->next != element){
+        itr = itr->next;
     }
 
     return itr;
@@ -172,6 +167,10 @@ void  delete_from_queue(List *element, Queue *q){
 
         q->end = element->next;
     
+    }
+
+    if(element->next == NULL){
+        q->start = previous;
     }
 
     element->next = NULL;
