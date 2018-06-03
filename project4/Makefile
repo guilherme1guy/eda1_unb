@@ -7,6 +7,7 @@ CFLAGS = -g -Wall
 
 default: $(TARGET)
 all: clean default run
+test: clean default run-infinity
 
 OBJECTS = $(patsubst %.c, %.o, $(wildcard src/*.c))
 HEADERS = $(wildcard src/*.h)
@@ -25,3 +26,6 @@ clean:
 
 run:
 	./$(TARGET)
+
+run-infinity:
+	while ./$(TARGET); do sleep 1.5; done
