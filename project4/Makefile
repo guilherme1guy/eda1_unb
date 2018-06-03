@@ -23,6 +23,7 @@ $(TARGET): $(OBJECTS)
 clean:
 	-rm -f src/*.o
 	-rm -f $(TARGET)
+	-mkdir build
 
 run:
 	./$(TARGET)
