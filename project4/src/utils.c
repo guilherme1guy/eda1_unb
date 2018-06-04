@@ -37,6 +37,24 @@ void plane_fall(List *element, Queue *q) {
 
 }
 
+void print_queue(Queue *q){
+
+    List *iterator = q->end;
+
+    while(iterator != NULL){
+
+        char *plane_code = get_plane_name(iterator->plane);
+
+        printf("\n[%s]", plane_code);
+
+        free(plane_code);
+
+        iterator = iterator->next;
+
+    }
+
+}
+
 void plane_action(Plane *p, int lane, int global_time){
     
     char *current_time = get_time_from_start(global_time); 

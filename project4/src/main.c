@@ -128,6 +128,21 @@ void update(Queue *plane_queue, Airport *airport) {
 
 }
 
+void print_header(Queue *q, int n_flights, int n_arrivals, int n_takeoffs){
+
+
+	char *current_time = get_time_from_start(0); 
+    
+	printf("\n\n=========\nAeroporto Internacional de Brasilia\n\tHora inicial: %s\n\t", current_time);
+	
+	free(current_time);
+
+	print_queue(q);
+
+	printf("\nNVoos: %d\nNaproximacoes: %d\nNDecolagens: %d\n\n", n_flights, n_arrivals, n_takeoffs);
+	printf("\n\n=========\nListagem de eventos: \n");
+}
+
 int main() {
 	
 	unsigned int now = time(NULL);
@@ -140,6 +155,8 @@ int main() {
 	int arrivals = 10 + (rand() % (32 - 10));
 	int plane_number = takeoffs + arrivals;; 
 	
+	int takeoff_count = takeoffs;
+	int arrival_count = arrivals;
 
 	for (int i = 0; i < plane_number; i++) {
 
@@ -157,6 +174,8 @@ int main() {
 		enqueue(element, plane_queue);
 		planes_made++;
 	}
+
+	print_header(plane_queue, planes_made, arrival_count, takeoff_count);
 
 	while (!is_empty(plane_queue)) {
 		

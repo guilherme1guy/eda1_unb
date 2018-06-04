@@ -19,4 +19,6 @@ void land_plane(Airport *a, Plane *p, int lane, int global_time);
 
 void takeoff_plane(Airport *a, Plane *p, int lane, int global_time);
 
+void print_queue(Queue *q);
+
 #endif /* UTILS_H */
