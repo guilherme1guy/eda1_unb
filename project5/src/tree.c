@@ -237,3 +237,34 @@ void free_tree(Tree *root){
     free_node(root);
 
 }
+
+void getHeight(Tree *root){
+
+    printf("\nAltura: %d", __getHeight(root));
+}
+
+int __getHeight(Tree *root){
+
+    int tree_height = 0;
+
+    if (isLeaf(root)){
+        return 1;
+    }
+
+    if(root->left != NULL){
+        tree_height = __getHeight(root->left);
+    }
+
+    if(root->right != NULL){
+        int h = __getHeight(root->right);
+        
+        if(h > tree_height) tree_height = h;
+    }
+
+
+    return tree_height + 1;
+}
+
+int isLeaf(Tree *node){
+    return (node != NULL &&node->left == NULL && node->right == NULL);
+}

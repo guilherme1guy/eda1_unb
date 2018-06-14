@@ -31,6 +31,10 @@ void searchValue(Tree *root, int value);
 
 void getHeight(Tree *root);
 
+int __getHeight(Tree *root);
+
+void __printTree(Tree *root, int order);
+
 void printInOrder(Tree *root);
 
 void printPreOrder(Tree *root);
@@ -38,5 +42,7 @@ void printPreOrder(Tree *root);
 void printPostOrder(Tree *root);
 
 Tree balanceTree(Tree *root);
+
+int isLeaf(Tree *node);
 
 #endif /* TRRE_H */

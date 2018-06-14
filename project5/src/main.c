@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 		
 		}else if (choice == 4) {
 
-			//getHeight(tree_root);
+			getHeight(tree_root);
 
 		}else if (choice == 5) {
 
