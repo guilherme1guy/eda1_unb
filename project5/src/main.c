@@ -52,11 +52,11 @@ Tree *getTree(){
 
 	while(root == NULL) {
 
-		printf("\n\nDigite o nome do arquivo: %s/", files_base_path);
+		printf("\n\nDigite o nome do arquivo: %s", files_base_path);
 
 		char *buffer = (char *) calloc(255, sizeof(char));
 
-		scanf("%s", &buffer);
+		scanf("%s", buffer);
 
 		char *filepath = (char *) calloc(
 			strlen(buffer) + strlen(files_base_path) + 16,
@@ -75,6 +75,8 @@ Tree *getTree(){
 		free(buffer);
 		free(filepath);
 	}
+
+	return root;
 }
 
 int main(int argc, char **argv) {
@@ -108,10 +110,10 @@ int main(int argc, char **argv) {
 		7 - printPreOrder\n\
 		8 - printPostOrder\n\
 		9 - balanceTree\n\
+		10 - insertNode \n\
 		");
-		int choice = get_choice(0, 9);
+		int choice = get_choice(0, 10);
 
-		puts("\n\n==========================\n\n");
 
 		if (choice == 0) {
 
@@ -123,27 +125,27 @@ int main(int argc, char **argv) {
 
 		}else if (choice == 1) {
 			
-			showTree(tree_root);
+			//showTree(tree_root);
 
 		}else if (choice == 2) {
 			
-			isFull(tree_root);
+			//isFull(tree_root);
 
 		}else if (choice == 3) {
 
 			int value = get_value();
 
-			searchValue(tree_root, value);
+			//searchValue(tree_root, value);
 		
 		}else if (choice == 4) {
 
-			getHeight(tree_root);
+			//getHeight(tree_root);
 
 		}else if (choice == 5) {
 
 			int value = get_value();
 
-			removeValue(tree_root, value);
+			//removeValue(tree_root, value);
 		}else if (choice == 6) {
 
 			printInOrder(tree_root);
@@ -158,12 +160,16 @@ int main(int argc, char **argv) {
 
 		}else if (choice == 9) {
 
-			balanceTree(tree_root);
+			//balanceTree(tree_root);
+		}else if (choice == 10){
+
+			int value = get_value();
+
+			Tree *node = create_node(value);
+
+			tree_root = insert_node(tree_root, node);
+
 		}
-
-		puts("\n\n---\nAperte enter para continuar...");
-		getchar();
-
 	}
 
 	return 0;
