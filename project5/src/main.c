@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 
 		}else if (choice == 2) {
 			
-			//isFull(tree_root);
+			isFull(tree_root);
 
 		}else if (choice == 3) {
 

@@ -27,6 +27,8 @@ void showTree(Tree *root);
 
 void isFull(Tree *root);
 
+int __isFull(Tree *root);
+
 void searchValue(Tree *root, int value);
 
 void getHeight(Tree *root);
@@ -44,5 +46,7 @@ void printPostOrder(Tree *root);
 Tree balanceTree(Tree *root);
 
 int isLeaf(Tree *node);
+
+int childCount(Tree *node);
 
 #endif /* TRRE_H */

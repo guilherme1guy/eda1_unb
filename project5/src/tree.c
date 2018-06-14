@@ -268,3 +268,31 @@ int __getHeight(Tree *root){
 int isLeaf(Tree *node){
     return (node != NULL &&node->left == NULL && node->right == NULL);
 }
+
+int childCount(Tree *node){
+    int child = 0;
+
+    if(node->left != NULL) child++;
+    if(node->right != NULL) child++;
+
+    return child;
+}
+
+void isFull(Tree *root){
+
+    printf("\nA arvore %s", __isFull(root) ? "e cheia" : "NAO e cheia");
+
+}
+
+int __isFull(Tree *root){
+
+    if(root == NULL){
+        return 0;
+    }
+
+    if(isLeaf(root)){
+        return 1;
+    }
+
+    return __isFull(root->left) && __isFull(root->right);
+}
