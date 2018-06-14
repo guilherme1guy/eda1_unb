@@ -26,7 +26,7 @@ clean:
 	-mkdir build
 
 run:
-	./$(TARGET)
+	./$(TARGET) "$(CURDIR)/references/BSTs/"
 
 run-infinity:
 	while ./$(TARGET); do sleep 1.5; done
