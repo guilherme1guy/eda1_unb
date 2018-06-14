@@ -143,16 +143,18 @@ void searchValue(Tree *root, int value) {
 
 		if (current->value == value) {
 
-			printf("Valor e a raiz, não ha pai ou irmaos.");
+			printf("Valor e a raiz, nao ha pai ou irmaos. Nivel: %d", level);
 			break;
 		} else if (value < current->value) {
 
 			if (current->left != NULL) {
 				
 				if (current->left->value == value) {
+					level++;
 					printf(
-						"\nEncontrado valor %d. Pai: %d. %s",
+						"\nEncontrado valor %d, nivel: %d. Pai: %d. ",
 						current->left->value,
+						level,
 						current->value
 					);
 
@@ -169,9 +171,11 @@ void searchValue(Tree *root, int value) {
 			if (current->right != NULL) {
 
 				if (current->right->value == value) {
+					level++;
 					printf(
-						"\nEncontrado valor %d. Pai: %d. %s",
+						"\nEncontrado valor %d, nivel: %d. Pai: %d. ",
 						current->right->value,
+						level,
 						current->value
 					);
 
@@ -181,6 +185,8 @@ void searchValue(Tree *root, int value) {
 
 			current = current->right;
 		}
+
+		level++;
 	}
 
 }

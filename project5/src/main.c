@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
 
 			int value = get_value();
 
-			//searchValue(tree_root, value);
+			searchValue(tree_root, value);
 		
 		}else if (choice == 4) {
 
