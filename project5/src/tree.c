@@ -341,60 +341,6 @@ int findLevel(Tree *root, int value){
 	}
 }
 
-int getArrayFromTree(Tree *root, int *array, int i){
-    
-    if(root == NULL)
-        return i;
-
-    array[i] = root->value;
-
-    i++;
-
-    if(root->left != NULL)
-        i = getArrayFromTree(root->left, array, i);
-    if(root->right != NULL)
-        i = getArrayFromTree(root->right, array, i);
-
-    return i;
-}
-
-int *__getPrintOrder(Tree *root){
-
-    int node_count = nodeCount(root);
-
-    int *elements = (int *) calloc(node_count, sizeof(int));
-
-    if (elements == NULL){
-        printf("\nMemory error - get print elements");
-        exit(1);
-    }
-
-    //k = 0 &k
-    getArrayFromTree(root, elements, 0);
-
-    return elements;
-    
-    // int *order = (int *) calloc(node_count, sizeof(int));
-
-    // if (order == NULL){
-    //     printf("\nMemory error - get print order");
-    //     exit(1);
-    // }
-
-    
-    // for(int i = 0; i < node_count; i++) {
-        
-    //     if(findLevel(root, elements[i]) == 0){
-
-    //     }
-
-    // }
-    
-
-
-    // return NULL;
-}
-
 int getNumLength(int num){
     int n = 0;
     
@@ -406,9 +352,7 @@ int getNumLength(int num){
     return n;
 }
 
-void __printMap(char **map, Tree *root){
-
-    int *elements_to_print = __getPrintOrder(root);
+void __printMap(char **map, int *relation_map_value, Tree *root){
 
     int k = 0;
     
@@ -425,11 +369,21 @@ void __printMap(char **map, Tree *root){
 
             if(c == '*'){
                 
-                int num = elements_to_print[k];
+                int num = -999;
+
+				for (int m = 0; m < 3 * nodeCount(root); m += 3) {
+				
+					if (relation_map_value[m] == i && relation_map_value[m + 1] == j) {
+						num = relation_map_value[m + 2];
+					}
+
+				}
 
                 spaces_to_skip = getNumLength(num) - 1;
                 
-                printf("%d", elements_to_print[k]);
+
+
+                printf("%d", num);
                 k++;
             }else{
 
@@ -446,8 +400,6 @@ void __printMap(char **map, Tree *root){
         if(space_count == strlen(map[i])) break;
         
     }
-
-    free (elements_to_print);
     
 }
 
@@ -474,24 +426,28 @@ int __find_magic_num(Tree *root){
 }
 
 
-void __drawOnMap(char **map, Tree *root, int lin, int col){
+void __drawOnMap(int* relational_map_value, int *inserted, char **map, Tree *real_root, Tree *root, int lin, int col){
 
 
 
     map[lin][col] = '*';
+
+    relational_map_value[inserted[0]] = lin;
+    relational_map_value[inserted[0] + 1] = col;
+    relational_map_value[inserted[0] + 2] = root->value;
+    inserted[0] += 3;
     
     if(isLeaf(root)) return;
 
-
     int tree_height = __find_magic_num(root);
-    
+
     if(root->left != NULL){
 
         for(int i = 1; i <= tree_height; i++){
             map[lin + i][col - i] = '/';
         }
 
-        __drawOnMap(map, root->left, lin + tree_height + 1, col - tree_height - 1);
+        __drawOnMap(relational_map_value, inserted, map, real_root, root->left, lin + tree_height + 1, col - tree_height - 1);
 
     }
     
@@ -501,13 +457,13 @@ void __drawOnMap(char **map, Tree *root, int lin, int col){
             map[lin + i][col + i] = '\\';
         }
 
-        __drawOnMap(map, root->right, lin + tree_height + 1, col + tree_height + 1);
+        __drawOnMap(relational_map_value, inserted, map, real_root, root->right, lin + tree_height + 1, col + tree_height + 1);
 
     }
 
 }
 
-char **__resize_map_limits(char **map, int lin, int col){
+char **__resize_map_limits(char **map, int *relation_map_value, int size, int lin, int col){
 
     int min_lin = 0, max_lin = 0, min_col = col, max_col = 0;
 
@@ -560,6 +516,11 @@ char **__resize_map_limits(char **map, int lin, int col){
 		}
 	}
 
+	for (int i = 0; i < size; i += 3) {
+		relation_map_value[i] -= min_lin;
+		relation_map_value[i + 1] -= min_col;
+	}
+
 
     return new_map;
 }
@@ -595,14 +556,13 @@ void showTree(Tree *root){
 		}
 	}
 
-    __drawOnMap(map, root, 0, (map_lin/2) - 1);
+    //i,j,val
+    int *relation_map_value = (int *) calloc(3*nodeCount(root), sizeof(int));
+    int inserted = 0;
 
-    char **map_resized = __resize_map_limits(map, map_lin, map_col);
+    __drawOnMap(relation_map_value, &inserted, map, root, root, 0, (map_lin/2) - 1);
 
-	for (map_lin = 0; map_resized[map_lin] != NULL; map_lin++);
- //   for(map_col = 0; map[0][map_col] != NULL; map_col++);
-    map_col = strlen(map_resized[0]);  
-
+    char **map_resized = __resize_map_limits(map, relation_map_value, 3*nodeCount(root), map_lin, map_col);
 
     for(int i = 0; map[i] != NULL; i++){
         free(map[i]);
@@ -610,7 +570,7 @@ void showTree(Tree *root){
 
     free(map);
 
-    __printMap(map_resized, root);
+    __printMap(map_resized, relation_map_value, root);
 
     
     for(int i = 0; map_resized[i] != NULL; i++){
@@ -618,5 +578,6 @@ void showTree(Tree *root){
     }
 
     free(map_resized);
+    free(relation_map_value);
 
 }
