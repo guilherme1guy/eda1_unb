@@ -19,7 +19,7 @@ void clear_input(){
 int get_choice(int min, int max) {
 	// get a user choice in range from min to max (inclusive)
 
-	int choice = -1;
+	int choice = min-1;
 
 	do {
 
@@ -100,6 +100,7 @@ int main(int argc, char **argv) {
 		puts("\n\n==========================\n\n");
 
 		puts("Operacoes:\n\
+		-1 - loadTreeFromFile\n\
 		0 - loadTreeFromFile\n\
 		1 - showTree\n\
 		2 - isFull\n\
@@ -113,10 +114,13 @@ int main(int argc, char **argv) {
 		10 - insertNode \n\
 		11 - nodeCount \n\
 		");
-		int choice = get_choice(0, 10);
+		int choice = get_choice(-1, 11);
 
+		if (choice == -1) {
+			
+			run = 0;
 
-		if (choice == 0) {
+		} else if (choice == 0) {
 
 			if (tree_root != NULL){
 				free_tree(tree_root);
