@@ -111,6 +111,7 @@ int main(int argc, char **argv) {
 		8 - printPostOrder\n\
 		9 - balanceTree\n\
 		10 - insertNode \n\
+		11 - nodeCount \n\
 		");
 		int choice = get_choice(0, 10);
 
@@ -125,7 +126,7 @@ int main(int argc, char **argv) {
 
 		}else if (choice == 1) {
 			
-			//showTree(tree_root);
+			showTree(tree_root);
 
 		}else if (choice == 2) {
 			
@@ -143,7 +144,7 @@ int main(int argc, char **argv) {
 
 		}else if (choice == 5) {
 
-			int value = get_value();
+			//int value = get_value();
 
 			//removeValue(tree_root, value);
 		}else if (choice == 6) {
@@ -169,8 +170,13 @@ int main(int argc, char **argv) {
 
 			tree_root = insert_node(tree_root, node);
 
+		}else if (choice == 11){
+
+			printf("Numero de elementos: %d", nodeCount(tree_root));
 		}
 	}
+
+	free_tree(tree_root);
 
 	return 0;
 }

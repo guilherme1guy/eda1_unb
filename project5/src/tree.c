@@ -4,10 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define PREORDER 0
 #define INORDER 1
 #define POSTORDER 2
+
+#define SEPARATOR_CHAR ' '
 
 Tree *create_node(int value){
 
@@ -94,7 +97,7 @@ Tree *loadTreeFromFile(char *filepath){
 
     rewind(f);
 
-    for(int i = 0; i < data_count; i++){
+    for(int i = 0; i <= data_count; i++){
     
         int value;
         fscanf(f, "%d", &value);
@@ -272,6 +275,8 @@ int isLeaf(Tree *node){
 int childCount(Tree *node){
     int child = 0;
 
+	if (node == NULL) return 0;
+
     if(node->left != NULL) child++;
     if(node->right != NULL) child++;
 
@@ -295,4 +300,323 @@ int __isFull(Tree *root){
     }
 
     return __isFull(root->left) && __isFull(root->right);
+}
+
+int nodeCount(Tree *root){
+
+    if (isLeaf(root)) return 1;
+
+	if (root == NULL) return 0;
+
+    return 1 + nodeCount(root->left) + nodeCount(root->right);
+
+}
+
+int findLevel(Tree *root, int value){
+
+	int level = 0;
+
+	Tree *current = root;
+
+	while (1) {
+
+		if (current == NULL) {
+			return -1;
+		}
+
+		if (current->value == value) {
+
+			return level;
+		}
+		else if (value < current->value) {
+
+			current = current->left;
+		}
+		else {
+
+			current = current->right;
+		}
+
+		level++;
+	}
+}
+
+int getArrayFromTree(Tree *root, int *array, int i){
+    
+    if(root == NULL)
+        return i;
+
+    array[i] = root->value;
+
+    i++;
+
+    if(root->left != NULL)
+        i = getArrayFromTree(root->left, array, i);
+    if(root->right != NULL)
+        i = getArrayFromTree(root->right, array, i);
+
+    return i;
+}
+
+int *__getPrintOrder(Tree *root){
+
+    int node_count = nodeCount(root);
+
+    int *elements = (int *) calloc(node_count, sizeof(int));
+
+    if (elements == NULL){
+        printf("\nMemory error - get print elements");
+        exit(1);
+    }
+
+    //k = 0 &k
+    getArrayFromTree(root, elements, 0);
+
+    return elements;
+    
+    // int *order = (int *) calloc(node_count, sizeof(int));
+
+    // if (order == NULL){
+    //     printf("\nMemory error - get print order");
+    //     exit(1);
+    // }
+
+    
+    // for(int i = 0; i < node_count; i++) {
+        
+    //     if(findLevel(root, elements[i]) == 0){
+
+    //     }
+
+    // }
+    
+
+
+    // return NULL;
+}
+
+int getNumLength(int num){
+    int n = 0;
+    
+    while(num) {
+        num /= 10;
+        n++;
+    }
+
+    return n;
+}
+
+void __printMap(char **map, Tree *root){
+
+    int *elements_to_print = __getPrintOrder(root);
+
+    int k = 0;
+    
+    for(int i = 0; map[i] != NULL; i++){
+        
+        printf("\n");
+
+		int space_count = 0;
+
+        int spaces_to_skip = 0;
+        for(int j = 0; j < strlen(map[i]); j++) {
+            
+            char c = map[i][j];
+
+            if(c == '*'){
+                
+                int num = elements_to_print[k];
+
+                spaces_to_skip = getNumLength(num) - 1;
+                
+                printf("%d", elements_to_print[k]);
+                k++;
+            }else{
+
+                if(c == SEPARATOR_CHAR && spaces_to_skip > 0){
+                    spaces_to_skip--;
+                }else{
+                    printf("%c", c);
+                }
+            }
+            if (c == SEPARATOR_CHAR) space_count++;
+
+        }
+
+        if(space_count == strlen(map[i])) break;
+        
+    }
+
+    free (elements_to_print);
+    
+}
+
+int sum_to_num(int n){
+
+    if(n == 0){
+        return 0;
+    }
+
+    return n + sum_to_num(n - 1);
+
+}
+
+int __find_magic_num(Tree *root){
+
+    if(isLeaf(root)) return 1;
+    
+    int num = __getHeight(root) * childCount(root) + 1;
+
+    if(root->left != NULL) num += __find_magic_num(root->left);
+    if(root->right != NULL) num += __find_magic_num(root->right);
+
+    return num;
+}
+
+
+void __drawOnMap(char **map, Tree *root, int lin, int col){
+
+
+
+    map[lin][col] = '*';
+    
+    if(isLeaf(root)) return;
+
+
+    int tree_height = __find_magic_num(root);
+    
+    if(root->left != NULL){
+
+        for(int i = 1; i <= tree_height; i++){
+            map[lin + i][col - i] = '/';
+        }
+
+        __drawOnMap(map, root->left, lin + tree_height + 1, col - tree_height - 1);
+
+    }
+    
+    if(root->right != NULL){
+
+        for(int i = 1; i <= tree_height; i++){
+            map[lin + i][col + i] = '\\';
+        }
+
+        __drawOnMap(map, root->right, lin + tree_height + 1, col + tree_height + 1);
+
+    }
+
+}
+
+char **__resize_map_limits(char **map, int lin, int col){
+
+    int min_lin = 0, max_lin = 0, min_col = col, max_col = 0;
+
+    for(int i = 0; i < lin - 1; i++){
+
+		int space_count = 0;
+
+        for(int j = 0; j < col - 1; j++) {
+            
+            char c = map[i][j];
+
+            if (c == SEPARATOR_CHAR)
+                space_count++;
+            else if (j < min_col){
+                min_col = j;
+            }else if (j > max_col){
+                max_col = j;
+            }
+
+        }
+
+        if(space_count == col - 1){
+            max_lin = i;
+            break;
+        }
+        
+    }
+
+    int new_lin = abs(max_lin - min_lin) + 1;
+
+    int new_col = abs(max_col + 1 - min_col) + 1;
+
+    char **new_map = (char **) calloc(new_lin, sizeof(char *));
+
+	if (new_map == NULL) {
+		puts("\nMemory error - new_map");
+		exit(1);
+	}
+
+    for(int i = 0; i < new_lin - 1; i++){
+        new_map[i] = (char *) calloc(new_col, sizeof(char));
+
+		if (new_map[i] == NULL) {
+			puts("\nMemory error - new_map");
+			exit(1);
+		}
+
+		for(int j = 0; j < new_col - 1; j++){
+			new_map[i][j] = map[min_lin + i][min_col + j];
+		}
+	}
+
+
+    return new_map;
+}
+
+void showTree(Tree *root){
+
+    int tree_height = __getHeight(root); 
+
+    int magic_num = __find_magic_num(root);
+
+    int map_col = (tree_height + sum_to_num(tree_height) * magic_num) * 2;
+    int map_lin = ceill(
+        sqrt( pow(map_col, 2) + pow(map_col/2, 2) )
+    );
+
+    char **map = (char **) calloc(map_lin, sizeof(char *));
+
+	if (map == NULL) {
+		puts("\nMemory error - MAP");
+		exit(1);
+	}
+
+    for(int i = 0; i < map_lin - 1; i++){
+        map[i] = (char *) calloc(map_col, sizeof(char));
+
+		if (map[i] == NULL) {
+			puts("\nMemory error - MAP");
+			exit(1);
+		}
+
+		for(int j = 0; j < map_col - 1; j++){
+			map[i][j] = SEPARATOR_CHAR;
+		}
+	}
+
+    __drawOnMap(map, root, 0, (map_lin/2) - 1);
+
+    char **map_resized = __resize_map_limits(map, map_lin, map_col);
+
+	for (map_lin = 0; map_resized[map_lin] != NULL; map_lin++);
+ //   for(map_col = 0; map[0][map_col] != NULL; map_col++);
+    map_col = strlen(map_resized[0]);  
+
+
+    for(int i = 0; map[i] != NULL; i++){
+        free(map[i]);
+    }
+
+    free(map);
+
+    __printMap(map_resized, root);
+
+    
+    for(int i = 0; map_resized[i] != NULL; i++){
+        free(map_resized[i]);
+    }
+
+    free(map_resized);
+
 }

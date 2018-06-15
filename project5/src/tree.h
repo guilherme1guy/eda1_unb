@@ -49,4 +49,6 @@ int isLeaf(Tree *node);
 
 int childCount(Tree *node);
 
+int nodeCount(Tree *root);
+
 #endif /* TRRE_H */
