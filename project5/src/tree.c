@@ -341,6 +341,132 @@ int findLevel(Tree *root, int value){
 	}
 }
 
+int getArrayFromTree(Tree *root, int *array, int i){
+    
+    if(root == NULL)
+        return i;
+
+    array[i] = root->value;
+
+    i++;
+
+    if(root->left != NULL)
+        i = getArrayFromTree(root->left, array, i);
+    if(root->right != NULL)
+        i = getArrayFromTree(root->right, array, i);
+
+    return i;
+}
+
+int getMinValue(int *array, int size){
+
+    int min = array[0];
+
+    
+    for(int i = 0; i < size; i++) {
+        
+        if (array[i] < min) {
+            min = array[i];
+        }
+        
+    }
+    
+    return min;
+}
+
+int contains(int *arr, int val, int size){
+
+    for(int i = 0; i < size; i++){
+        if(arr[i] == val){
+            return 1;
+        }
+    }
+
+    return 0;
+
+}
+
+int __getNextInPrintOrder(Tree *real_root, Tree *root, int *picked, int size, int level, int end_code){
+
+    int current_level = findLevel(real_root, root->value);
+ 
+    if(current_level < level){
+        if (root->left != NULL){
+           int i = __getNextInPrintOrder(real_root, root->left, picked, size, level, end_code);
+        
+            if (i != end_code){
+                return i;
+            }
+        }
+
+        if (root->right != NULL){
+           int i = __getNextInPrintOrder(real_root, root->right, picked, size, level, end_code);
+        
+            if (i != end_code){
+                return i;
+            }
+        }
+
+        return end_code;
+    }else if(current_level > level){
+        return end_code;
+    }
+
+    if(contains(picked, root->value, size) == 0){
+        return root->value;
+    }else{
+        return end_code;
+    }
+
+
+}
+
+int *__getPrintOrder(Tree *root){
+
+    int node_count = nodeCount(root);
+
+    int *elements = (int *) calloc(node_count, sizeof(int));
+
+    if (elements == NULL){
+        printf("\nMemory error - get print elements");
+        exit(1);
+    }
+
+    getArrayFromTree(root, elements, 0);
+   
+    int min_val = getMinValue(elements, node_count) - 1;
+
+    int *order = (int *) calloc(node_count, sizeof(int));
+
+    if (order == NULL){
+        printf("\nMemory error - get print order");
+        exit(1);
+    }
+
+    
+    for(int i = 0; i < node_count; i++) {
+        order[i] = min_val;
+    }
+    
+
+    int k = 0;
+    for(int i = 0; i < __getHeight(root); i++) {
+        
+        int val = __getNextInPrintOrder(root, root, order, node_count, i, min_val);
+
+        if(val != min_val){
+            i--;
+            order[k] = val;
+            k++;
+        }
+
+    }
+
+    free(elements);  
+
+    return order;
+}
+
 int getNumLength(int num){
     int n = 0;
     
@@ -353,6 +479,8 @@ int getNumLength(int num){
 }
 
 void __printMap(char **map, int *relation_map_value, Tree *root){
+
+    int *elements_to_print = __getPrintOrder(root);
 
     int k = 0;
     
@@ -369,7 +497,7 @@ void __printMap(char **map, int *relation_map_value, Tree *root){
 
             if(c == '*'){
                 
-                int num = -999;
+                int num = elements_to_print[k];
 
 				for (int m = 0; m < 3 * nodeCount(root); m += 3) {
 				
@@ -400,6 +528,8 @@ void __printMap(char **map, int *relation_map_value, Tree *root){
         if(space_count == strlen(map[i])) break;
         
     }
+
+    free (elements_to_print);
     
 }
 
