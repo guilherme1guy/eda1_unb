@@ -555,8 +555,8 @@ void showTree(Tree *root){
 
     int magic_num = __find_magic_num(root);
 
-    int map_col = (tree_height + sum_to_num(tree_height) * magic_num) * 2;
-    int map_lin = ceill(
+    int map_col = 1 + (tree_height + sum_to_num(tree_height) * magic_num) * 2;
+    int map_lin = 1 + ceill(
         sqrt( pow(map_col, 2) + pow(map_col/2, 2) )
     );
 
