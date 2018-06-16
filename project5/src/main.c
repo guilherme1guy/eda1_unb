@@ -86,9 +86,24 @@ int main(int argc, char **argv) {
 
 	files_base_path = argv[1];
 
-	if(files_base_path == NULL){
+	int base_path_iserted = 0;
+
+	while(files_base_path == NULL){
 		puts("\nNo file base path provided!");
-		exit(1);
+		
+		puts("\nInsert a new one: ");
+
+		files_base_path = (char *) calloc(255, sizeof(char));
+		
+		if(files_base_path == NULL){
+			puts("Memory error");
+			exit(1);
+		}
+
+		scanf("%s", files_base_path);
+
+		
+		base_path_iserted = 1;
 	}
 
 	Tree *tree_root = NULL;
@@ -191,7 +206,8 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	free_tree(tree_root);
+	if(tree_root != NULL) free_tree(tree_root);
+	if (base_path_iserted) free(files_base_path);
 
 	return 0;
 }
