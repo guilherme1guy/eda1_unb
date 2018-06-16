@@ -91,13 +91,24 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
-	Tree *tree_root = getTree();
+	Tree *tree_root = NULL;
+
+	puts("Iniciar com arvore de arquivo? 1 - sim / 0 - nao");
+	int preload = get_choice(0,1);
+
+	if(preload){
+		tree_root = getTree();
+	}
 
 	// main menu loop
 	int run = 1;
 	while (run) {
 
 		puts("\n\n==========================\n\n");
+
+		if(tree_root == NULL){
+			puts("\n\n\t\tATENCAO: ARVORE NULA/NAO CARREGADA\n\n");
+		}
 
 		puts("Operacoes:\n\
 		-1 - loadTreeFromFile\n\
