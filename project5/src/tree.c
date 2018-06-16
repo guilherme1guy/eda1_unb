@@ -439,7 +439,7 @@ void __drawOnMap(int* relational_map_value, int *inserted, char **map, Tree *rea
     
     if(isLeaf(root)) return;
 
-    int tree_height = __find_magic_num(root);
+    int tree_height = __find_magic_num(root) / 4;
 
     if(root->left != NULL){
 
