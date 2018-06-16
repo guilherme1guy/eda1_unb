@@ -159,9 +159,9 @@ int main(int argc, char **argv) {
 
 		}else if (choice == 5) {
 
-			//int value = get_value();
+			int value = get_value();
 
-			//removeValue(tree_root, value);
+			tree_root = removeValue(tree_root, value);
 		}else if (choice == 6) {
 
 			printInOrder(tree_root);

@@ -31,6 +31,10 @@ int __isFull(Tree *root);
 
 void searchValue(Tree *root, int value);
 
+Tree *searchElement(Tree *root, int value);
+
+Tree *findFather(Tree *root, int value);
+
 void getHeight(Tree *root);
 
 int __getHeight(Tree *root);

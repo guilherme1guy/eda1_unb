@@ -194,6 +194,30 @@ void searchValue(Tree *root, int value) {
 
 }
 
+Tree *searchElement(Tree *root, int value) {
+
+	Tree *current = root;
+
+	while (1) {
+
+		if (current == NULL) {
+			return NULL;
+		}
+
+		if (current->value == value) {
+
+			return current;
+		} else if (value < current->value) {
+
+			current = current->left;
+		}
+		else {
+
+			current = current->right;
+		}
+	}
+}
+
 void printInOrder(Tree *root){
 
     puts("\n[ ");
@@ -579,5 +603,127 @@ void showTree(Tree *root){
 
     free(map_resized);
     free(relation_map_value);
+
+}
+
+
+Tree *findFather(Tree *root, int value){
+
+	Tree *current = root;
+
+	while (1) {
+
+		if (current == NULL || current->value == value) {
+			return NULL;
+		}
+        
+        
+         if (value < current->value) {
+
+			if (current->left != NULL) {
+				
+				if (current->left->value == value) {
+                    return current;
+                }
+			}
+
+			current = current->left;
+		}
+		else {
+
+			if (current->right != NULL) {
+
+				if (current->right->value == value) {
+		            return current;
+				}
+			}
+
+			current = current->right;
+		}
+	}
+}
+
+Tree *findSuccessor(Tree *root){
+
+    Tree *current = root;
+    int go_right = 0;
+    
+    if(root->right != NULL){
+        current = root->right;
+    }else if(root->left != NULL){
+        current = root->left;
+        go_right = 1;
+    }else{
+        return NULL;
+    }
+
+    while(1){
+
+        if(
+			isLeaf(current) ||
+			(go_right && current->right == NULL) ||
+			(!go_right && current->left== NULL)
+		) return current;
+
+        if(go_right) current = current->right; else current = current->left;
+
+    }
+
+
+}
+
+Tree *removeValue(Tree *root, int value){
+
+    Tree *element = searchElement(root, value);
+    Tree *father = findFather(root, value);
+
+
+    int is_root = (element == root);
+    
+    if(element == NULL){
+
+        printf("\nElemento %d nao encontrado na arvore.", value);
+
+    }else if(isLeaf(element)){
+        
+        if(father != NULL) {
+
+            if(father->right == element) father->right = NULL;
+            if(father->left == element) father->left = NULL;
+
+        }
+
+        free_node(element);
+
+        if(is_root) return NULL;
+
+    } else if(childCount(element) == 1){
+
+        Tree *child = element->right != NULL ? element->right : element->left;
+
+        if(father != NULL){
+
+            if(father->right == element) father->right = child;
+            if(father->left == element) father->left = child;
+
+        }else{
+
+            root = child;
+        }
+
+        free_node(element);
+
+    }else if(childCount(element) == 2){
+
+        Tree *next = findSuccessor(element);
+        int suc_value = next->value;
+
+        removeValue(root, next->value);
+    
+		element->value = suc_value;
+	}
+
+
+    return root;
 
 }
