@@ -750,7 +750,130 @@ int balanced(Tree *root){
 
 }
 
+void rotateRight(Tree *grampa, Tree *father, Tree *son){
 
-Tree *balanceTree(Tree *root){
-    return NULL;
+    if(grampa != NULL){
+
+        if (grampa->left == father) {
+            grampa->left = son;
+        } else { 
+            grampa->right = son;
+        }
+
+    }
+
+    father->left = son->right;
+    son->right = father;
+
+}
+
+void rotateLeft(Tree *grampa, Tree *father, Tree *son){
+
+    if(grampa != NULL){
+
+        if (grampa->left == father) {
+            grampa->left = son;
+        } else { 
+            grampa->right = son;
+        }
+
+    }
+
+    father->right = son->left;
+    son->left = father;
+
+}
+
+
+Tree *balanceTree(Tree *root, int showSteps){
+
+    if(balanced(root)) return root;
+
+
+
+	Tree *work_root = root;
+    Tree *gramp = NULL;
+    Tree *father = NULL;
+    Tree *son = work_root;
+
+    while(son != NULL){
+
+        if (showSteps) showTree(work_root);
+
+        if(son->left){
+            
+
+			father = son;
+			son = son->left;
+			rotateRight(gramp, father, son);
+
+			if (father == work_root) {
+				work_root = son;
+				gramp = NULL;
+				father = NULL;
+			}
+
+        }else{
+            
+            gramp = son;
+            son = son->right;
+        }
+
+    }
+
+
+    gramp = NULL;
+    father = NULL;
+    son = work_root;
+
+    while(son != NULL){
+
+		if (showSteps) showTree(work_root);
+
+        if(gramp != NULL) gramp = father;
+        father = son;
+        son = son->right;
+
+		if (son == NULL) break;
+
+        if(father == work_root){
+			work_root = son;
+        }
+        
+        rotateLeft(gramp, father, son);
+        gramp = father;
+        father = son;
+        son = son->right;
+
+    }
+
+
+	gramp = NULL;
+	father = NULL;
+	son = work_root;
+
+	while (son != NULL) {
+
+		if (showSteps) showTree(work_root);
+
+		if (gramp != NULL) gramp = father;
+		father = son;
+		son = son->right;
+
+		if (son == NULL) break;
+
+		if (father == work_root) {
+			work_root = son;
+		}
+
+		rotateLeft(gramp, father, son);
+		gramp = father;
+		father = son;
+		son = son->right;
+
+	}
+
+
+    return work_root;
+
 }

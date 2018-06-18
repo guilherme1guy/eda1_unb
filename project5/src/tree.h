@@ -47,7 +47,7 @@ void printPreOrder(Tree *root);
 
 void printPostOrder(Tree *root);
 
-Tree *balanceTree(Tree *root);
+Tree *balanceTree(Tree *root, int showSteps);
 
 int isLeaf(Tree *node);
 

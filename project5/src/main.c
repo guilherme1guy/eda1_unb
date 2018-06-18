@@ -192,7 +192,10 @@ int main(int argc, char **argv) {
 
 		}else if (choice == 9) {
 
-			//balanceTree(tree_root);
+			puts("\nMostar passos de balanceamento? 0 - nao, 1 - sim: ");
+			int showSteps = get_choice(0, 1);
+
+			tree_root = balanceTree(tree_root, showSteps);
 		}else if (choice == 10){
 
 			int value = get_value();
