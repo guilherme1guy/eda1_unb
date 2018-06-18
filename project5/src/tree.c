@@ -278,6 +278,10 @@ int __getHeight(Tree *root){
         return 1;
     }
 
+	if (root == NULL) {
+		return 0;
+	}
+
     if(root->left != NULL){
         tree_height = __getHeight(root->left);
     }
@@ -726,4 +730,27 @@ Tree *removeValue(Tree *root, int value){
 
     return root;
 
+}
+
+int balanced(Tree *root){
+    
+    if(isLeaf(root) || root == NULL){
+        return 1;
+    }
+
+    int hleft = __getHeight(root->left);
+    int hright = __getHeight(root->right);
+
+    if (abs(hright - hleft) > 1){
+        return 0;
+    }
+
+    return balanced(root->right) && balanced(root->left);
+    
+
+}
+
+
+Tree *balanceTree(Tree *root){
+    return NULL;
 }

@@ -139,8 +139,9 @@ int main(int argc, char **argv) {
 		9 - balanceTree\n\
 		10 - insertNode \n\
 		11 - nodeCount \n\
+		12 - balanced \n\
 		");
-		int choice = get_choice(-1, 11);
+		int choice = get_choice(-1, 12);
 
 		if (choice == -1) {
 			
@@ -203,6 +204,9 @@ int main(int argc, char **argv) {
 		}else if (choice == 11){
 
 			printf("Numero de elementos: %d", nodeCount(tree_root));
+		}else if (choice == 12){
+
+			printf("Arvore balanceada: %d", balanced(tree_root));
 		}
 	}
 

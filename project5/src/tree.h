@@ -47,12 +47,14 @@ void printPreOrder(Tree *root);
 
 void printPostOrder(Tree *root);
 
-Tree balanceTree(Tree *root);
+Tree *balanceTree(Tree *root);
 
 int isLeaf(Tree *node);
 
 int childCount(Tree *node);
 
 int nodeCount(Tree *root);
+
+int balanced(Tree *root);
 
 #endif /* TRRE_H */
