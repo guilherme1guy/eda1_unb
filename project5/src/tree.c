@@ -505,11 +505,16 @@ char **__resize_map_limits(char **map, int *relation_map_value, int size, int li
 
             if (c == SEPARATOR_CHAR)
                 space_count++;
-            else if (j < min_col){
-                min_col = j;
-            }else if (j > max_col){
-                max_col = j;
-            }
+            else{
+				
+				if (j < min_col) {
+					min_col = j;
+				}
+			
+				if (j > max_col) {
+					max_col = j;
+				}	
+			}
 
         }
 
