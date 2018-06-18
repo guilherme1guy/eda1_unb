@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 		}
 
 		puts("Operacoes:\n\
-		-1 - loadTreeFromFile\n\
+		-1 - exit\n\
 		0 - loadTreeFromFile\n\
 		1 - showTree\n\
 		2 - isFull\n\
